@@ -1,0 +1,3 @@
+files_from_vm/*
+pg/*
+!pg/.gitkeep

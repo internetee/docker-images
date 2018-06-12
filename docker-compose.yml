@@ -1,0 +1,37 @@
+version: "3.2"
+
+services:
+  registry:
+    tty: true
+    stdin_open: true
+    build:
+      context: ./../registry
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - APP_DBHOST=db
+      - APACHE_HOST=httpd
+    volumes:
+      - ./../registry:/opt/webapps/app
+    ports:
+      - "3000:3000"
+    command: bash -c "wait-for-it db:5432 && rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+
+  httpd:
+    tty: true
+    stdin_open: true
+    build:
+      context: ./httpd
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - registry
+    command: bash -c "apachectl -e info -DFOREGROUND"
+
+  db:
+    image: postgres:9.4
+    volumes:
+      - ./pg:/var/lib/postgresql/data
