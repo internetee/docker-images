@@ -15,11 +15,32 @@ services:
       - APACHE_HOST=httpd
     volumes:
       - ./../registry:/opt/webapps/app
+      - ./shared/ca:/opt/ca
     ports:
       - "3000:3000"
-    command: bash -c "wait-for-it db:5432 && rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    command: bash -c "wait-for-it db:5432 -t 60 && rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+
+  epp:
+    tty: true
+    stdin_open: true
+    build:
+      context: ./../registry
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - APP_DBHOST=db
+      - APACHE_HOST=httpd
+    volumes:
+      - ./../registry:/opt/webapps/app
+      - ./shared/ca:/opt/ca
+    # ports:
+      # - "3000:3000"
+    command: bash -c "wait-for-it db:5432 -t 60 && rm -f tmp/pids/epp.pid && bundle exec rails server --pid tmp/pids/epp.pid -b 0.0.0.0"
 
   httpd:
+    image: maciejszlosarczyk/httpd_epp:2.4
     tty: true
     stdin_open: true
     build:
@@ -29,6 +50,10 @@ services:
       - "443:443"
     links:
       - registry
+    volumes:
+      # - ./httpd/apache2/apache2.conf:/etc/apache2/apache2.conf
+      # - ./httpd/apache2/sites-enabled:/etc/apache2/sites-enabled
+      - ./shared/ca:/opt/ca
     command: bash -c "apachectl -e info -DFOREGROUND"
 
   db:
