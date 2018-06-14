@@ -1,4 +1,4 @@
-files_from_vm/*
+# Use pg folder for storing database files
 pg/*
 !pg/.gitkeep
 
