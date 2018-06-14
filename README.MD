@@ -32,7 +32,7 @@ To get started, you need:
   * Internet.ee projects in specific folders, relative to this folder:
     ```
     .
-    +-- docker (You are here)
+    +-- docker_images (You are here)
     +-- registry (clone of https://github.com/internetee/registry)
     +-- rest_whois (clone of https://github.com/internetee/rest-whois)
     ```
