@@ -1,0 +1,4 @@
+# Log everything to stdout
+Errorlog    /dev/err
+Transferlog /dev/stdout
+CustomLog   /dev/stdout vhost_combined

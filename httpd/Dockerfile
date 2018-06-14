@@ -22,4 +22,3 @@ RUN a2enmod ssl
 WORKDIR /etc/apache2
 EXPOSE 80
 EXPOSE 443
-ENTRYPOINT ["apachectl", "-e info", "-DFOREGROUND"]

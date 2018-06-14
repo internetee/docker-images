@@ -1,3 +1,13 @@
 files_from_vm/*
 pg/*
 !pg/.gitkeep
+
+# Make sure certificates stay private
+shared/ca/*/*
+shared/ca/*
+!shared/ca/*/.gitkeep
+!shared/ca/openssl.cnf
+!shared/ca/generate_certificates.sh
+!shared/ca/prepare_root_ca.sh
+!shared/ca/server.csr.cnf
+!shared/ca/v3.ext
