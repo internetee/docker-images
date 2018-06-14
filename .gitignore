@@ -5,6 +5,7 @@ pg/*
 # Make sure certificates stay private
 shared/ca/*/*
 shared/ca/*
+
 !shared/ca/*/.gitkeep
 !shared/ca/openssl.cnf
 !shared/ca/generate_certificates.sh
