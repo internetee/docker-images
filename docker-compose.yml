@@ -31,17 +31,17 @@ services:
     command: bash -c "rm -f tmp/pids/epp.pid && bundle exec rails server --pid tmp/pids/epp.pid -b 0.0.0.0"
     restart: on-failure
 
-  rest_whois:
+  rest-whois:
     tty: true
     stdin_open: true
     build:
-      context: ./../rest_whois
+      context: ./../rest-whois
     links:
       - db
     environment:
       - APP_DBHOST=db
     volumes:
-      - ./../rest_whois:/opt/webapps/app
+      - ./../rest-whois:/opt/webapps/app
       - ./shared/ca:/opt/ca
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
     restart: on-failure
