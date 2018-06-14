@@ -130,7 +130,7 @@ __NB!__ Containers need to be rebuilt every time there is an update to the gemfi
 
 ```bash
 $ docker-compose run registry rake db:setup:all
-$ docker-compose run rest_whois rake db:setup:all
+$ docker-compose run rest-whois rake db:setup:all
 ```
 
 ## Useful commands
