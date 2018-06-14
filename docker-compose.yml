@@ -15,7 +15,8 @@ services:
       - ./shared/ca:/opt/ca
     ports:
       - "3000:3000"
-    command: bash -c "wait-for-it db:5432 -t 60 && rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: on-failure
 
   epp:
     tty: true
@@ -29,7 +30,8 @@ services:
     volumes:
       - ./../registry:/opt/webapps/app
       - ./shared/ca:/opt/ca
-    command: bash -c "wait-for-it db:5432 -t 60 && rm -f tmp/pids/epp.pid && bundle exec rails server --pid tmp/pids/epp.pid -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/epp.pid && bundle exec rails server --pid tmp/pids/epp.pid -b 0.0.0.0"
+    restart: on-failure
 
   rest_whois:
     tty: true
@@ -43,7 +45,8 @@ services:
     volumes:
       - ./../rest_whois:/opt/webapps/app
       - ./shared/ca:/opt/ca
-    command: bash -c "wait-for-it db:5432 -t 60 && rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: on-failure
 
   httpd:
     image: maciejszlosarczyk/httpd_epp:2.2
@@ -64,8 +67,10 @@ services:
       - ./httpd/apache2/sites-enabled:/etc/apache2/sites-enabled
       - ./shared/ca:/opt/ca
     command: bash -c "apachectl -e info -DFOREGROUND"
+    restart: on-failure
 
   db:
     image: postgres:9.4
     volumes:
       - ./pg:/var/lib/postgresql/data
+    restart: on-failure
