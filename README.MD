@@ -114,7 +114,26 @@ Sign the certificate? [y/n]:
 1 out of 1 certificate requests certified, commit? [y/n]y
 ```
 
+### Configure registry `config/application.yml`
 
+Put the following values in Registry project's `config/application.yml` file:
+
+```yaml
+openssl_config_path: '/opt/ca/openssl.cnf'
+crl_dir:     '/opt/ca/crl'
+crl_path:     '/opt/ca/crl/crl.pem'
+ca_cert_path: '/opt/ca/certs/ca.crt.pem'
+ca_key_path:  '/opt/ca/private/ca.key.pem'
+ca_key_password: # your password
+
+
+webclient_cert_common_name: 'localhost'
+epp_port: '700'
+cert_path: '/opt/ca/certs/webclient.crt.pem'
+key_path: '/opt/ca/private/webclient.key.pem'
+epp_hostname: 'httpd'
+repp_url: 'http://httpd/repp/v1/'
+```
 
 ### Build docker images
 
