@@ -40,7 +40,7 @@ To get started, you need:
 
 ## Setup
 
-Setup of the project consists of four steps steps. The projects should work with out of the box configuration for both `config/application-example.yml` and `config/database-example.yml`.
+Setup of the project consists of four steps steps. The projects should work with out of the box configuration for both `config/application-example.yml` and `config/database-example.yml`. Small changes that are described below are needed for certificates and setup of EPP/REST API.
 
 ### Setup root CA
 
