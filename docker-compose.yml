@@ -31,6 +31,21 @@ services:
     command: bash -c "rm -f tmp/pids/epp.pid && bundle exec rails server --pid tmp/pids/epp.pid -b 0.0.0.0"
     restart: on-failure
 
+  repp:
+    tty: true
+    stdin_open: true
+    build:
+      context: ./../registry
+    links:
+      - db
+    environment:
+      - APP_DBHOST=db
+    volumes:
+      - ./../registry:/opt/webapps/app
+      - ./shared/ca:/opt/ca
+    command: bash -c "rm -f tmp/pids/repp.pid && bundle exec rails server --pid tmp/pids/repp.pid -b 0.0.0.0"
+    restart: on-failure
+
   rest-whois:
     tty: true
     stdin_open: true

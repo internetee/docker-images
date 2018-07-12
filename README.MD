@@ -132,7 +132,7 @@ epp_port: '700'
 cert_path: '/opt/ca/certs/webclient.crt.pem'
 key_path: '/opt/ca/private/webclient.key.pem'
 epp_hostname: 'httpd'
-repp_url: 'http://httpd/repp/v1/'
+repp_url: 'http://repp:3000/repp/v1/'
 ```
 
 ### Build docker images
