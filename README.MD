@@ -13,9 +13,12 @@ Planned additions:
 
 ## Design
 
-The setup includes one Apache server acting as reverse proxy, 1 REST WHOIS server, 1 registry instance serving EPP requests and 1 registry server serving all portals interface. Ruby projects are running Puma servers.
+The setup includes one Apache server acting as reverse proxy, 1 REST WHOIS
+server, 1 registry instance serving EPP requests and 1 registry server serving
+all portals interface. Ruby projects are running Puma servers.
 
-Postgres instance persists its files on the host disk, inside the `pg` folder. The folder is ignored by git.
+Postgres instance persists its data in a dedicated volume, which is NOT deleted
+with `docker-compose down`.
 
 All services run on localhost. Registry is running over HTTPS.
 
@@ -40,22 +43,34 @@ To get started, you need:
 
 ## Setup
 
-Setup of the project consists of four steps steps. The projects should work with out of the box configuration for both `config/application-example.yml` and `config/database-example.yml`. Small changes that are described below are needed for certificates and setup of EPP/REST API.
+Setup of the project consists of four steps steps. The projects should work with
+out of the box configuration for both `config/application-example.yml` and
+`config/database-example.yml`. Small changes that are described below are
+needed for certificates and setup of EPP/REST API.
 
 ### Setup root CA
 
-You will be asked to supply a password and certain certificate details, such as common name. Remember the password, as you'll be required to supply it at various points in time for generation of other certificates. The root CA, and all the certificates are valid for 1 year only.
+You will be asked to supply a password and certain certificate details, such as
+common name. Remember the password, as you'll be required to supply it at
+various points in time for generation of other certificates. The root CA, and
+all the certificates are valid for 1 year only.
 
   ```bash
   $ cd shared/ca
   $ ./prepare_root_ca.sh
   ```
 
-Add the newly generated certificates from `shared/ca/ca.crt.pem` certificate to your trusted chains, and enable trust for SSL communication. If you are using a MacOS computer, just drop the certificate file to login keychain in Keychain Access.
+Add the newly generated certificates from `shared/ca/ca.crt.pem` certificate to
+your trusted chains, and enable trust for SSL communication. If you are using a
+MacOS computer, just drop the certificate file to login keychain in Keychain
+Access.
 
-__NB!__ Trusting a self generated certificate is generally a security risk, so make sure that you're the only person with the access to this root ca and do not commit it to any kind of source code repository.
+__NB!__ Trusting a self generated certificate is generally a security risk, so
+make sure that you're the only person with the access to this root ca and do not
+commit it to any kind of source code repository.
 
-If you already have a certificate like that from a different project, you can just drop the files to the required locations:
+If you already have a certificate like that from a different project, you can
+just drop the files to the required locations:
 
   * key to `shared/ca/private/ca.key.pem`
   * certificate to `shared/ca/certs/ca.cert.pem`
@@ -143,19 +158,28 @@ In the project root, run the following commands:
 $ docker-compose build
 ```
 
-__NB!__ Containers need to be rebuilt every time there is an update to the gemfile.
+__NB!__ Containers need to be rebuilt every time there is an update to the
+gemfile.
 
 ### Setup databases
 
 ```bash
 $ docker-compose run registry rake db:setup:all
-$ docker-compose run rest-whois rake db:setup:all
+$ docker-compose run rest-whois rake db:setup
 ```
+
+__NB!__ On first run, the commands above might fail due to the database
+container not being yet ready.
 
 ## Useful commands
 
 Below you will find a list of useful and frequently used docker commands:
 
-  * `docker exec -it $container_name_number /bin/bash` Opens bash in a running container, so you can run `rake test`, `rake db:migrate` or other commands on the codebase.
+  * `docker exec -it $container_name_number /bin/bash` Opens bash in a running
+  container, so you can run `rake test`, `rake db:migrate` or other commands on
+  the codebase.
   * `docker image prune` Removes dangling images to save you some SSD space.
-  * `docker attach $container_name_number` Attaches to a running container, useful if you have pry breakpoint somewhere in your code. To deatach without stopping the container, press `CTRL+P, CTRL+Q`.
+  * `docker attach $container_name_number` Attaches to a running container,
+  useful if you have pry breakpoint somewhere in your code. To deatach
+  without stopping the container, press `CTRL+P, CTRL+Q`.
+  * `docker volume rm docker-images_pg` Removes the postgres docker image.
