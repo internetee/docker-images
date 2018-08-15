@@ -1,4 +1,4 @@
-FROM ruby:2.3.7-jessie
+FROM ruby:2.4.4-jessie
 MAINTAINER maciej.szlosarczyk@internet.ee
 
 RUN apt-get update && apt-get install -y \
