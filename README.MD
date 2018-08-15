@@ -5,10 +5,10 @@ environment for the following projects:
 
   * [Registry](https://github.com/internetee/registry)
   * [Rest WHOIS](https://github.com/internetee/rest-whois)
+  * [WHOIS](https://github.com/internetee/whois)
 
 Planned additions:
 
-  *  [WHOIS](https://github.com/internetee/whois)
   *  [EPP Webclient](https://github.com/internetee/epp)
 
 ## Design
@@ -25,6 +25,8 @@ All services run on localhost. Registry is running over HTTPS.
 The following vhosts work on Chrome:
   * admin.localhost
   * rest-whois.localhost
+
+Additionally, whois works on port #43 on localhost
 
 ## Pre-requirements
 
@@ -148,6 +150,21 @@ cert_path: '/opt/ca/certs/webclient.crt.pem'
 key_path: '/opt/ca/private/webclient.key.pem'
 epp_hostname: 'httpd'
 repp_url: 'http://repp:3000/repp/v1/'
+```
+
+### Configure whois database
+
+Whois database does not work well with environment variables, so you can instead
+hard code a working docker setup in `config/database.yml`:
+
+```yaml
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  host: db
+  username: postgres
+  password:
 ```
 
 ### Build docker images
