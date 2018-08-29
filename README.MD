@@ -6,6 +6,7 @@ environment for the following projects:
   * [Registry](https://github.com/internetee/registry)
   * [Rest WHOIS](https://github.com/internetee/rest-whois)
   * [WHOIS](https://github.com/internetee/whois)
+  * [Auction Center](https://github.com/internetee/auction_center)
 
 Planned additions:
 
@@ -25,6 +26,7 @@ All services run on localhost. Registry is running over HTTPS.
 The following vhosts work on Chrome:
   * admin.localhost
   * rest-whois.localhost
+  * auction.localhost
 
 Additionally, whois works on port #43 on localhost
 
@@ -183,6 +185,7 @@ gemfile.
 ```bash
 $ docker-compose run registry rake db:setup:all
 $ docker-compose run rest-whois rake db:setup
+$ docker-compose run auction rake db:setup
 ```
 
 __NB!__ On first run, the commands above might fail due to the database
