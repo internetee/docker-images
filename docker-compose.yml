@@ -78,6 +78,21 @@ services:
     command: bash -c "rm -f tmp/pids/whois_server.pid && ruby whois.rb run"
     restart: on-failure
 
+  auction_center:
+    tty: true
+    stdin_open: true
+    build:
+      context: ./../auction_center
+    links:
+      - db
+    environment:
+      - APP_DBHOST=db
+    volumes:
+      - ./../auction_center:/opt/webapps/app
+      - ./shared/ca:/opt/ca
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: on-failure
+
   httpd:
     image: internetee/httpd_epp:2.2
     tty: true
