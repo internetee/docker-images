@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3"
 
 services:
   registry:
@@ -118,6 +118,8 @@ services:
     image: postgres:9.4
     volumes:
       - pg:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
     restart: on-failure
 
 volumes:

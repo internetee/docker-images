@@ -28,7 +28,7 @@ The following vhosts work on Chrome:
   * rest-whois.localhost
   * auction.localhost
 
-Additionally, whois works on port #43 on localhost
+Additionally, whois works on port 43 on localhost.
 
 ## Pre-requirements
 
@@ -190,6 +190,16 @@ $ docker-compose run auction rake db:setup
 
 __NB!__ On first run, the commands above might fail due to the database
 container not being yet ready.
+
+### Connecting to database server
+
+If you need to connect to postgres container, it is exposed to localhost on port
+5433, with default username being `postgres` and no password.
+
+```bash
+$ psql -p 5433 -U postgres -h localhost
+```
+
 
 ## Useful commands
 
