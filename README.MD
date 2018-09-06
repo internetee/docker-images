@@ -28,6 +28,15 @@ The following vhosts work on Chrome:
   * rest-whois.localhost
   * auction.localhost
 
+To allow access from Firefox, you should:
+
+1. Visit `about:config` in Firefox.
+2. Find `network.dns.localDomains` key
+3. Enter `admin.localhost,rest-whois.localhost,auction.localhost` as values.
+
+   If you have any other domains subdomains that should work on localhost, add
+   them as well, just make sure to use comma as a separator.
+
 Additionally, whois works on port 43 on localhost.
 
 ## Pre-requirements
