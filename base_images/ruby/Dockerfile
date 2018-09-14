@@ -3,11 +3,14 @@ MAINTAINER maciej.szlosarczyk@internet.ee
 
 RUN apt-get update && apt-get install -y \
     build-essential \
-    nodejs \
     imagemagick \
     postgresql-client-9.4
 
+# add repository for Node.js in the LTS version
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+
 RUN apt-get install -y \
+  nodejs \
   qt5-default \
   libqt5webkit5-dev \
   gstreamer1.0-plugins-base \
@@ -18,7 +21,7 @@ RUN apt-get install -y \
   fonts-liberation \
   libgconf2-4
 
-RUN wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
+RUN wget https://chromedriver.storage.googleapis.com/2.42/chromedriver_linux64.zip
 RUN apt-get install -yf unzip
 RUN unzip chromedriver_linux64.zip -d /usr/local/bin
 
