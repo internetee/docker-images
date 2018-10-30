@@ -1,4 +1,4 @@
-FROM ruby:2.4.4-jessie
+FROM ruby:2.4.5-jessie
 MAINTAINER maciej.szlosarczyk@internet.ee
 
 RUN apt-get update && apt-get install -y \
@@ -21,7 +21,7 @@ RUN apt-get install -y \
   fonts-liberation \
   libgconf2-4
 
-RUN wget https://chromedriver.storage.googleapis.com/2.42/chromedriver_linux64.zip
+RUN wget https://chromedriver.storage.googleapis.com/2.43/chromedriver_linux64.zip
 RUN apt-get install -yf unzip
 RUN unzip chromedriver_linux64.zip -d /usr/local/bin
 
