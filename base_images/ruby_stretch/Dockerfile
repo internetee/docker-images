@@ -1,10 +1,13 @@
-FROM ruby:2.4.5-jessie
+FROM ruby:2.5-stretch
 MAINTAINER maciej.szlosarczyk@internet.ee
 
 RUN apt-get update && apt-get install -y \
     build-essential \
-    imagemagick \
-    postgresql-client-9.4
+    imagemagick
+
+RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+RUN apt-get update && apt-get install -y postgresql-client-9.4
 
 # add repository for Node.js in the LTS version
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
