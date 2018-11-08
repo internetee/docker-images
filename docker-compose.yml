@@ -19,8 +19,7 @@ services:
   epp:
     tty: true
     stdin_open: true
-    build:
-      context: ./../registry
+    image: docker-images_registry
     links:
       - db
     environment:
@@ -34,8 +33,7 @@ services:
   repp:
     tty: true
     stdin_open: true
-    build:
-      context: ./../registry
+    image: docker-images_registry
     links:
       - db
     environment:
