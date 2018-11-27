@@ -15,7 +15,7 @@ RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends > /
     && rm -rf /var/lib/apt/lists/*
 
 # add repository for Node.js in the LTS version
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 
 RUN apt-get install -y --no-install-recommends > /dev/null \
   nodejs=* \
