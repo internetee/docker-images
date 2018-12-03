@@ -88,7 +88,7 @@ services:
     volumes:
       - ./../auction_center:/opt/webapps/app
       - ./shared/ca:/opt/ca
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails jobs:work & bundle exec rails server -b 0.0.0.0"
     restart: on-failure
 
   httpd:
