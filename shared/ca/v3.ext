@@ -4,4 +4,9 @@ keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = localhost
+DNS.1 = test
+DNS.2 = registry.test
+DNS.3 = auction.test
+DNS.4 = rest-whois.test
+DNS.5 = epp.test
+DNS.6 = repp.test
