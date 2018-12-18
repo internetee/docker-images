@@ -21,18 +21,13 @@ all portals interface. Ruby projects are running Puma servers.
 Postgres instance persists its data in a dedicated volume, which is NOT deleted
 with `docker-compose down`.
 
-All services run on localhost. Registry is running over HTTPS.
+All services run on *.test domain, and are available via HTTPS. Use a tool like
+[dnsmasq](https://www.stevenrombauts.be/2018/01/use-dnsmasq-instead-of-etc-hosts/) to redirect *.test domains to 127.0.0.1.
 
-The following vhosts work on Chrome:
-  * admin.localhost
-  * rest-whois.localhost
-  * auction.localhost
-
-To allow access from Firefox, you should:
-
-1. Visit `about:config` in Firefox.
-2. Find `network.dns.localDomains` key
-3. Enter `admin.localhost,rest-whois.localhost,auction.localhost` as values.
+The following vhosts work on Chrome, Firefox and Safari:
+  * admin.test
+  * rest-whois.test
+  * auction.test
 
    If you have any other domains subdomains that should work on localhost, add
    them as well, just make sure to use comma as a separator.
