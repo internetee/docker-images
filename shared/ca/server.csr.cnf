@@ -11,4 +11,4 @@ L=Tallinn
 O=EestiInternetiSA
 OU=Arendus
 emailAddress=hello@internet.ee
-CN = test
+CN = *.test
