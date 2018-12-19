@@ -29,9 +29,6 @@ The following vhosts work on Chrome, Firefox and Safari:
   * rest-whois.test
   * auction.test
 
-   If you have any other domains subdomains that should work on localhost, add
-   them as well, just make sure to use comma as a separator.
-
 Additionally, whois works on port 43 on localhost.
 
 ## Pre-requirements
