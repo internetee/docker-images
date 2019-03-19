@@ -1,9 +1,9 @@
 # Internet.ee base images
 
 These are the Dockerfiles for base images used at Estonian Internet foundation
-for Apache with EPP and Ruby. There are 2 sets of Ruby images: one for Jessie,
-which is mainly used for registry, and another one for Stretch, used by REST WHOIS
-and auction center.
+for Apache with EPP and Ruby. There are 3 sets of Ruby images: one for Ruby 2.4,
+which is mainly used for registry, one for Ruby 2.5 used by REST WHOIS
+and auction center, and one for Ruby 2.6 (not in use as of 2019-03-19)
 
 ## Updating images
 
