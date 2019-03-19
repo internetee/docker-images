@@ -1,4 +1,4 @@
-FROM ruby:2.5-stretch
+FROM ruby:2.6-stretch
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends > /dev/null \
