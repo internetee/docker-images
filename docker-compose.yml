@@ -4,6 +4,7 @@ services:
   registry:
     tty: true
     stdin_open: true
+    image: registry
     build:
       context: ./../registry
     links:
@@ -19,7 +20,7 @@ services:
   epp:
     tty: true
     stdin_open: true
-    image: docker-images_registry
+    image: registry
     links:
       - db
     environment:
@@ -33,7 +34,7 @@ services:
   repp:
     tty: true
     stdin_open: true
-    image: docker-images_registry
+    image: registry
     links:
       - db
     environment:
@@ -47,6 +48,7 @@ services:
   rest-whois:
     tty: true
     stdin_open: true
+    image: rest-whois
     build:
       context: ./../rest-whois
     links:
@@ -64,6 +66,7 @@ services:
     stdin_open: true
     ports:
       - "43:43"
+    image: whois
     build:
       context: ./../whois
     links:
@@ -79,8 +82,25 @@ services:
   auction_center:
     tty: true
     stdin_open: true
+    image: auction_center
     build:
       context: ./../auction_center
+    links:
+      - db
+    environment:
+      - APP_DBHOST=db
+      - HEALTHCHECK_USER=healthcheck
+      - HEALTHCHECK_PASSWORD=healthcheck
+    volumes:
+      - ./../auction_center:/opt/webapps/app
+      - ./shared/ca:/opt/ca
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: on-failure
+
+  auction_center_delayed_job:
+    image: auction_center
+    tty: true
+    stdin_open: true
     links:
       - db
     environment:
@@ -88,7 +108,7 @@ services:
     volumes:
       - ./../auction_center:/opt/webapps/app
       - ./shared/ca:/opt/ca
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails jobs:work & bundle exec rails server -b 0.0.0.0"
+    command: bash -c "bundle exec rails jobs:work"
     restart: on-failure
 
   httpd:
