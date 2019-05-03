@@ -121,6 +121,10 @@ services:
       - "443:443"
       # EPP
       - "700:700"
+      # EPP
+      - "1700:1700"
+      # EPP
+      - "11700:11700"
       # REST WHOIS
       - "800:800"
       # EPP web client
@@ -129,7 +133,7 @@ services:
       - ./httpd/apache2/conf.d/logging:/etc/apache2/conf.d/logging
       - ./httpd/apache2/sites-enabled:/etc/apache2/sites-enabled
       - ./shared/ca:/opt/ca
-    command: bash -c "apachectl -e info -DFOREGROUND"
+    command: bash -c "apachectl -e debug -DFOREGROUND"
     restart: on-failure
 
   db:
