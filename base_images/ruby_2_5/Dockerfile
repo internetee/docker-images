@@ -24,12 +24,24 @@ RUN apt-get install -y --no-install-recommends > /dev/null \
   gstreamer1.0-plugins-base=* \
   libappindicator3-1=* \
   gstreamer1.0-tools=* \
+  libasound2=* \
+  libnspr4=* \
+  libnss3=* \
+  libxss1=* \
+  libxtst6=* \
+  xdg-utils=* \
   qtdeclarative5-dev=* \
   fonts-liberation=* \
   gstreamer1.0-x=* \
-  chromedriver=* \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
+RUN curl https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -o /chromedriver_linux64.zip
+RUN apt-get update > /dev/null \
+    && apt-get install -yf --no-install-recommends > /dev/null unzip=* \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+RUN unzip chromedriver_linux64.zip -d /usr/local/bin
 
 RUN curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb
 RUN dpkg -i /chrome.deb || apt-get install -yf --no-install-recommends > /dev/null
