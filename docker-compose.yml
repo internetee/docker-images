@@ -31,18 +31,21 @@ services:
     command: bash -c "rm -f tmp/pids/epp.pid && bundle exec rails server --pid tmp/pids/epp.pid -b 0.0.0.0"
     restart: on-failure
 
-  repp:
+  epp_proxy:
     tty: true
     stdin_open: true
-    image: registry
+    image: epp_proxy
+    build:
+      context: ./../epp_proxy
     links:
       - db
-    environment:
-      - APP_DBHOST=db
+    ports:
+      - "700:700"
+      - "3333:3333"
     volumes:
-      - ./../registry:/opt/webapps/app
+      - ./../epp_proxy:/opt/erlang/epp_proxy
       - ./shared/ca:/opt/ca
-    command: bash -c "rm -f tmp/pids/repp.pid && bundle exec rails server --pid tmp/pids/repp.pid -b 0.0.0.0"
+    command: bash -c "rebar3 shell --config config/docker.config"
     restart: on-failure
 
   rest-whois:
@@ -119,16 +122,8 @@ services:
       # Registry
       - "80:80"
       - "443:443"
-      # EPP
-      - "700:700"
-      # EPP
-      - "1700:1700"
-      # EPP
-      - "11700:11700"
-      # REST WHOIS
-      - "800:800"
-      # EPP web client
-      - "900:900"
+      # OLD MOD EPP
+      - "7000:7000"
     volumes:
       - ./httpd/apache2/conf.d/logging:/etc/apache2/conf.d/logging
       - ./httpd/apache2/sites-enabled:/etc/apache2/sites-enabled
