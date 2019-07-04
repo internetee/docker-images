@@ -7,10 +7,7 @@ environment for the following projects:
   * [Rest WHOIS](https://github.com/internetee/rest-whois)
   * [WHOIS](https://github.com/internetee/whois)
   * [Auction Center](https://github.com/internetee/auction_center)
-
-Planned additions:
-
-  *  [EPP Webclient](https://github.com/internetee/epp)
+  * [EPP Proxy](https://github.com/internetee/epp_proxy)
 
 ## Design
 
@@ -29,7 +26,7 @@ The following vhosts work on Chrome, Firefox and Safari:
   * rest-whois.test
   * auction.test
 
-Additionally, whois works on port 43 on localhost.
+Additionally, whois works on port 43 on localhost, and EPP is exposed on 700 port.
 
 ## Pre-requirements
 
