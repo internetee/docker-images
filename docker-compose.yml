@@ -45,7 +45,7 @@ services:
     volumes:
       - ./../epp_proxy:/opt/erlang/epp_proxy
       - ./shared/ca:/opt/ca
-    command: bash -c "rebar3 shell --config config/docker.config"
+    command: bash -c "rebar3 auto --config config/docker.config"
     restart: on-failure
 
   rest-whois:
@@ -122,8 +122,6 @@ services:
       # Registry
       - "80:80"
       - "443:443"
-      # OLD MOD EPP
-      - "7000:7000"
     volumes:
       - ./httpd/apache2/conf.d/logging:/etc/apache2/conf.d/logging
       - ./httpd/apache2/sites-enabled:/etc/apache2/sites-enabled
