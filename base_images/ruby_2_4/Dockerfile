@@ -7,6 +7,7 @@ RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends > /
     curl \
     wget \
     gnupg2 \
+    git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -47,12 +48,14 @@ RUN apt-get update > /dev/null \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 RUN unzip chromedriver_linux64.zip -d /usr/local/bin
+RUN rm /chromedriver_linux64.zip
 
 RUN curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb
 RUN dpkg -i /chrome.deb || apt-get update > /dev/null \
     && apt-get install -yf --no-install-recommends > /dev/null && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 RUN dpkg -i /chrome.deb
+RUN rm /chrome.deb
 
 RUN mkdir -p /opt/webapps/app/tmp/pids
 WORKDIR /opt/webapps/app
