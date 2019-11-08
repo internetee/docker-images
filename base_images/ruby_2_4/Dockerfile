@@ -16,6 +16,7 @@ RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -s | apt-key add -
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends > /dev/null \
     postgresql-client-9.4=* \
+    libpq-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
