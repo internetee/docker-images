@@ -6,7 +6,7 @@
 # This definition stops the following lines choking if HOME isn't
 # defined.
 HOME			= .
-RANDFILE		= $ENV::HOME/.rnd
+# RANDFILE		= $ENV::HOME/.rnd
 
 # Extra OBJECT IDENTIFIER info:
 #oid_file		= $ENV::HOME/.oid
@@ -39,7 +39,8 @@ default_ca	= CA_default		# The default ca section
 ####################################################################
 [ CA_default ]
 
-dir		= /opt/ca               # Where everything is kept
+#dir		= /Users/karlerikounapuu/Documents/dev/docker-images/shared/ca               # Where everything is kept
+dir		= /opt/ca
 certs		= $dir/certs		# Where the issued certs are kept
 crl_dir		= $dir/crl		# Where the issued crl are kept
 database	= $dir/index.txt	# database index file.
@@ -52,7 +53,7 @@ serial		= $dir/serial 		# The current serial number
 crlnumber	= $dir/crlnumber	# the current crl number
 					# must be commented out to leave a V1 CRL
 crl		= $dir/crl.pem 		# The current CRL
-private_key	= $dir/private/cakey.pem# The private key
+private_key	= $dir/private/ca.key.pem # The private key
 RANDFILE	= $dir/private/.rand	# private random number file
 
 x509_extensions	= usr_cert		# The extensions to add to the cert

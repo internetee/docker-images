@@ -10,3 +10,4 @@ DNS.3 = auction.test
 DNS.4 = rest-whois.test
 DNS.5 = epp.test
 DNS.6 = repp.test
+DNS.7 = registrar.test
