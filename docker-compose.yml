@@ -122,6 +122,7 @@ services:
       # Registry
       - "80:80"
       - "443:443"
+      - "7000:7000" # epp_proxy middleware
     volumes:
       - ./httpd/apache2/conf.d/logging:/etc/apache2/conf.d/logging
       - ./httpd/apache2/sites-enabled:/etc/apache2/sites-enabled
