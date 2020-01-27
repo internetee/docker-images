@@ -11,9 +11,14 @@ environment for the following projects:
 
 ## Design
 
-The setup includes one Apache server acting as reverse proxy, 1 REST WHOIS
-server, 1 registry instance serving EPP requests and 1 registry server serving
-all portals interface. Ruby projects are running Puma servers.
+The setup includes:
+  * 1 Apache server acting as reverse proxy
+  * 1 registry instance serving EPP requests
+  * 1 registry server serving all portals interface.
+  * 1 auction server serving auction interface
+  * 1 auction server running background (delayed) tasks
+  * 1 REST WHOIS server
+Ruby projects are running Puma servers.
 
 Postgres instance persists its data in a dedicated volume, which is NOT deleted
 with `docker-compose down`.
@@ -22,9 +27,10 @@ All services run on *.test domain, and are available via HTTPS. Use a tool like
 [dnsmasq](https://www.stevenrombauts.be/2018/01/use-dnsmasq-instead-of-etc-hosts/) to redirect *.test domains to 127.0.0.1.
 
 The following vhosts work on Chrome, Firefox and Safari:
-  * admin.test
+  * registry.test
   * rest-whois.test
   * auction.test
+  * registrar.test
 
 Additionally, whois works on port 43 on localhost, and EPP is exposed on 700 port.
 
@@ -33,7 +39,6 @@ Additionally, whois works on port 43 on localhost, and EPP is exposed on 700 por
 To get started, you need:
 
   * Docker
-  * OpenSSL command line
   * Internet.ee projects in specific folders, relative to this folder:
     ```
     .
@@ -50,6 +55,61 @@ out of the box configuration for both `config/application-example.yml` and
 `config/database-example.yml`. Small changes that are described below are
 needed for certificates and setup of EPP/REST API.
 
+### Build docker images
+
+In the project root, run the following command:
+
+```bash
+$ docker-compose build
+```
+
+__NB!__ Containers need to be rebuilt every time there is an update to the
+gemfile.
+
+### Fire up docker-compose project
+
+Since multiple configuration files are already using container-based paths, we need to boot up our project beforehand to address these paths.
+
+In the project root, run the following command:
+
+```bash
+$ docker-compose up -d
+```
+
+This command will start all containers defined in docker-compose configuration file. You will see some errors from docker logs, but don't worry, they're expected.
+
+### Connect to active registry container
+
+Since openssl.cnf is based on paths used in container itself, we need to generate certificates inside container environment.
+
+In the project root, run the following command:
+
+```bash
+$ docker ps
+```
+
+Mark down any `CONTAINER ID` which is running `registry` image.
+```
+$ docker ps
+CONTAINER ID        IMAGE
+2b13fa1fe93c        auction_center
+**d4077e3a2e1c** << THIS ONE        registry
+b0934102c7a6        auction_center
+**48e8e38d2059** << OR THIS ONE       registry
+9b6e13696d01        epp_proxy
+7efc7918ecf0        internetee/httpd_epp:2.2
+54a6e24954d6        postgres:9.4
+
+```
+
+Now, let's connect to registry container via:
+
+```bash
+$ docker exec -ti <CONTAINER ID> /bin/bash
+```
+
+Great, we're inside container now.
+
 ### Setup root CA
 
 You will be asked to supply a password and certain certificate details, such as
@@ -57,12 +117,16 @@ common name. Remember the password, as you'll be required to supply it at
 various points in time for generation of other certificates. The root CA, and
 all the certificates are valid for 1 year only.
 
+Now, while connected to `registry` container, run this:
+
   ```bash
-  $ cd shared/ca
+  $ cd /opt/ca
   $ ./prepare_root_ca.sh
   ```
 
-Add the newly generated certificates from `shared/ca/ca.crt.pem` certificate to
+By docker-compose, our main host `shared/ca` is mirrored to container env's `/opt/ca` path. These directories are shared.
+
+Now, on different terminal tab, on main host, add the newly generated certificates from `shared/ca/ca.crt.pem` certificate to
 your trusted chains, and enable trust for SSL communication. If you are using a
 MacOS computer, just drop the certificate file to login keychain in Keychain
 Access.
@@ -81,10 +145,10 @@ Then, move on to generating certificates reqired by application.
 
 ### Setup application certificates
 
-You will be asked for your root CA password multiple times.
+As in previous step, run following commands inside container environment. You will be asked for your root CA password multiple times.
 
   ```bash
-  $ cd shared/ca
+  $ cd /opt/ca
   $ ./generate_certificates.sh
   ```
 
@@ -131,6 +195,10 @@ Sign the certificate? [y/n]:
 1 out of 1 certificate requests certified, commit? [y/n]y
 ```
 
+We've generated our required certificates now. Feel free to close container connection.
+
+Let's shut down our composed project now via `docker-compose down` for now.
+
 ### Configure registry `config/application.yml`
 
 Put the following values in Registry project's `config/application.yml` file:
@@ -148,8 +216,8 @@ webclient_cert_common_name: 'localhost'
 epp_port: '700'
 cert_path: '/opt/ca/certs/webclient.crt.pem'
 key_path: '/opt/ca/private/webclient.key.pem'
-epp_hostname: 'httpd'
-repp_url: 'http://repp:3000/repp/v1/'
+epp_hostname: 'epp_proxy'
+repp_url: 'http://epp:3000/repp/v1/'
 ```
 
 ### Configure whois database
@@ -167,7 +235,7 @@ default: &default
   password:
 ```
 
-### Build docker images
+### Build docker images again
 
 In the project root, run the following commands:
 
@@ -175,15 +243,28 @@ In the project root, run the following commands:
 $ docker-compose build
 ```
 
-__NB!__ Containers need to be rebuilt every time there is an update to the
-gemfile.
-
 ### Setup databases
 
+Assuming you're going to set up registry as development, rename `config/database_development.yml.sample` to `config/database.yml`
+
+Modify `default` block to look like as follow:
+
+```
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("APP_DB_MAX_THREADS") { 5 } %>
+  host: <%= ENV.fetch("APP_DBHOST") { "localhost" } %>
+  username: <%= ENV.fetch("APP_DBUSER") { "postgres" } %>
+  password:
+
+```
+Done? Great. Let's initialize our databases.
+
 ```bash
-$ docker-compose run registry rake db:setup:all
-$ docker-compose run rest-whois rake db:setup
-$ docker-compose run auction rake db:setup
+$ docker-compose run registry bundle exec rake db:setup:all
+$ docker-compose run rest-whois bundle exec rake db:setup
+$ docker-compose run auction bundle exec rake db:setup
 ```
 
 __NB!__ On first run, the commands above might fail due to the database
