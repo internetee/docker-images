@@ -61,7 +61,7 @@ RUN dpkg -i /chrome.deb || apt-get update > /dev/null \
     && rm -rf /var/lib/apt/lists/*
 RUN dpkg -i /chrome.deb
 RUN rm /chrome.deb
-
+RUN sed -i 's/SECLEVEL=2/SECLEVEL=1/' /etc/ssl/openssl.cnf
 
 RUN mkdir -p /opt/webapps/app/tmp/pids
 WORKDIR /opt/webapps/app
