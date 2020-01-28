@@ -42,6 +42,9 @@ RUN apt-get install -y --no-install-recommends > /dev/null \
   qtdeclarative5-dev=* \
   fonts-liberation=* \
   gstreamer1.0-x=* \
+  wkhtmltopdf \
+  libxslt1-dev \
+  libxml2-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
