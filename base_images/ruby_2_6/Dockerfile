@@ -12,6 +12,12 @@ RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends > /
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y locales
+RUN sed -i -e 's/# et_EE.UTF-8 UTF-8/et_EE.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=et_EE.UTF-8
+
+ENV LANG et_EE.UTF-8
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -s | apt-key add -
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends > /dev/null \
@@ -42,6 +48,9 @@ RUN apt-get install -y --no-install-recommends > /dev/null \
   qtdeclarative5-dev=* \
   fonts-liberation=* \
   gstreamer1.0-x=* \
+  wkhtmltopdf \
+  libxslt1-dev \
+  libxml2-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -61,7 +70,7 @@ RUN dpkg -i /chrome.deb || apt-get update > /dev/null \
     && rm -rf /var/lib/apt/lists/*
 RUN dpkg -i /chrome.deb
 RUN rm /chrome.deb
-
+RUN sed -i 's/SECLEVEL=2/SECLEVEL=1/' /etc/ssl/openssl.cnf
 
 RUN mkdir -p /opt/webapps/app/tmp/pids
 WORKDIR /opt/webapps/app
