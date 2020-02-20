@@ -211,7 +211,7 @@ ca_cert_path: '/opt/ca/certs/ca.crt.pem'
 ca_key_path:  '/opt/ca/private/ca.key.pem'
 ca_key_password: # your password
 
-
+webclient_ips: '127.0.0.1'
 webclient_cert_common_name: 'localhost'
 epp_port: '700'
 cert_path: '/opt/ca/certs/webclient.crt.pem'
@@ -233,6 +233,14 @@ default: &default
   host: db
   username: postgres
   password:
+```
+
+### Configure epp-proxy sys.config
+
+```yaml
+%% Path to root CA that should check the client certificates.
+{cacertfile_path, "/opt/ca/certs/ca.crt.pem"},
+
 ```
 
 ### Build docker images again
