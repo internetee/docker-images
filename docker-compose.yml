@@ -137,6 +137,9 @@ services:
     ports:
       - "5433:5432"
     restart: on-failure
+    environment:
+      POSTGRES_DB: "db"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
 
 volumes:
   pg:
