@@ -272,7 +272,7 @@ Done? Great. Let's initialize our databases.
 ```bash
 $ docker-compose run registry bundle exec rake db:setup:all
 $ docker-compose run rest-whois bundle exec rake db:setup
-$ docker-compose run auction bundle exec rake db:setup
+$ docker-compose run auction_center bundle exec rake db:setup
 ```
 
 __NB!__ On first run, the commands above might fail due to the database
