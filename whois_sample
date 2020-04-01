@@ -1,0 +1,611 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE public.ar_internal_metadata (
+    key character varying NOT NULL,
+    value character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.ar_internal_metadata OWNER TO postgres;
+
+--
+-- Name: contact_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE public.contact_requests (
+    id integer NOT NULL,
+    whois_record_id integer NOT NULL,
+    secret character varying NOT NULL,
+    email character varying NOT NULL,
+    name character varying NOT NULL,
+    valid_to timestamp without time zone NOT NULL,
+    status character varying DEFAULT 'new'::character varying NOT NULL,
+    ip_address inet,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.contact_requests OWNER TO postgres;
+
+--
+-- Name: contact_requests_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.contact_requests_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.contact_requests_id_seq OWNER TO postgres;
+
+--
+-- Name: contact_requests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.contact_requests_id_seq OWNED BY public.contact_requests.id;
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE public.schema_migrations (
+    version character varying NOT NULL
+);
+
+
+ALTER TABLE public.schema_migrations OWNER TO postgres;
+
+--
+-- Name: whois_records; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE public.whois_records (
+    id integer NOT NULL,
+    name character varying,
+    json json,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.whois_records OWNER TO postgres;
+
+--
+-- Name: whois_records_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.whois_records_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.whois_records_id_seq OWNER TO postgres;
+
+--
+-- Name: whois_records_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.whois_records_id_seq OWNED BY public.whois_records.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.contact_requests ALTER COLUMN id SET DEFAULT nextval('public.contact_requests_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.whois_records ALTER COLUMN id SET DEFAULT nextval('public.whois_records_id_seq'::regclass);
+
+
+--
+-- Data for Name: ar_internal_metadata; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.ar_internal_metadata (key, value, created_at, updated_at) FROM stdin;
+environment	development	2020-01-27 14:52:35.310034	2020-01-27 14:52:35.310034
+\.
+
+
+--
+-- Data for Name: contact_requests; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.contact_requests (id, whois_record_id, secret, email, name, valid_to, status, ip_address, created_at, updated_at) FROM stdin;
+1	7	a857e20943ad07fcacb4fd7db4facbd482b189e379b8e1ffc1ae1afea8b1ce7e0338a534efad2e4b1b2c357759669e3e7eabc6c5c5497ad7edfa5cf89c2ffdfb	karlerik@kreative.ee	Karl Erik	2020-04-02 06:26:29.186764	new	\N	2020-04-01 06:26:29.186683	2020-04-01 06:26:29.186683
+\.
+
+
+--
+-- Name: contact_requests_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.contact_requests_id_seq', 1, true);
+
+
+--
+-- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.schema_migrations (version) FROM stdin;
+20181102124618
+20180306181554
+20150427073517
+20180214213743
+20160304125933
+20160405131315
+20180228064342
+20150422134243
+20141229115619
+20150514132606
+20171121233843
+20180308123240
+20150217133755
+20150512160938
+20141010130412
+20150202084444
+20170221115548
+20170423210622
+20170509215614
+20180613030330
+20180309054510
+20150203135303
+20180207071528
+20140819103517
+20150330083700
+20180211011948
+20181017092829
+20160225113812
+20180826162821
+20140902121843
+20141127091027
+20150105134026
+20140925084916
+20151130175654
+20140813135408
+20150707104937
+20150520163237
+20150318085110
+20140925101927
+20141014073435
+20140804095654
+20150407145943
+20180228055259
+20141008134959
+20151029152638
+20150202140346
+20150414092249
+20140815110028
+20150709092549
+20150413115829
+20141006130306
+20150413140933
+20180313124751
+20180327151906
+20150903105659
+20151202123506
+20140828133057
+20150504104922
+20150921110152
+20180207072139
+20150519095416
+20140730104916
+20150519140853
+20141009100818
+20140730141443
+20181017154038
+20160225113801
+20140627082711
+20150421134820
+20180213183818
+20180212154731
+20140925073831
+20150408081917
+20180206213435
+20181017205123
+20150130191056
+20150610144547
+20150212125339
+20150612123111
+20150603212659
+20150430121807
+20150129093938
+20150416080828
+20180120182712
+20141216075056
+20170422142116
+20180122105335
+20151127091716
+20141126140434
+20181017153935
+20150227113121
+20140911101604
+20180310142630
+20140828074404
+20180121165304
+20180123165604
+20170506212014
+20171025113808
+20180120183441
+20150416091357
+20170606202859
+20150303151224
+20150319125655
+20180612042953
+20160113143447
+20141210085432
+20150226121252
+20180218004148
+20150130155904
+20171009082321
+20170419120048
+20140616073945
+20161004101419
+20150803080914
+20150429135339
+20141006124904
+20160411140719
+20170506144743
+20180123170112
+20141211095604
+20150921111842
+20150611124920
+20140925073340
+20150318114921
+20150423083308
+20150519094929
+20180306182941
+20180129143538
+20140930093039
+20140724084927
+20181017153658
+20170423214500
+20150521120145
+20141015135255
+20180823174331
+20180613045614
+20180126104536
+20140911101310
+20150706091724
+20160629114503
+20150915094707
+20150130085458
+20150223104842
+20170506205356
+20180824215326
+20180823163548
+20150413102310
+20180129232054
+20150110000000
+20171123035941
+20181002090319
+20180825193437
+20160414110443
+20150303130729
+20171025153841
+20180331200125
+20140926121409
+20140815082619
+20180801114403
+20150415075408
+20150226144723
+20150513080013
+20180211011450
+20140926082627
+20180306183540
+20150610112238
+20180309053424
+20160226132045
+20180126104903
+20150810114746
+20140828080320
+20151124200353
+20170606150352
+20150227092508
+20150305092921
+20140701130945
+20170606133501
+20150213104014
+20150703084632
+20140801140249
+20180123154407
+20171009080822
+20180120172657
+20140826103454
+20170423222302
+20170423151046
+20140731073300
+20180306182456
+20150511120755
+20150722071128
+20141114130737
+20180824102834
+20180112084442
+20180808064402
+20150122091557
+20160429114732
+20180306183549
+20140730082358
+20180212123810
+20141009101337
+20150518084324
+20140929095329
+20140730082532
+20180120172649
+20150910113839
+20150428075052
+20141124105221
+20150302161712
+20161227193500
+20141218154829
+20180125092422
+20180612042625
+20150603141549
+20180823161237
+20160108135436
+20150707154543
+20150422132631
+20140731081816
+20150122091556
+20150414151357
+20140815114000
+20140925085340
+20150414124630
+20180713154915
+20150410124724
+20180306181538
+20170420125200
+20160421074023
+20150217133937
+20141015135742
+20140702144833
+20150603211318
+20140926081324
+20170422162824
+20180228070431
+20150129144652
+20170423225333
+20180306182758
+20181022100114
+20150417082723
+20150416092026
+20150130180452
+20180612042234
+20181001090536
+20160311085957
+20150200000000
+20150515103222
+20151125155601
+20150109081914
+20141111105931
+20150410132037
+20160527110738
+20180309053921
+20150413080832
+20151117081204
+20180214200224
+20151112160452
+20181017154143
+20150519144118
+20180306181911
+20150505111437
+20140819095802
+20170506205946
+20140828072329
+20160218102355
+20141010085152
+20151209122816
+20160118092454
+20150422092514
+20151028183132
+20170506155009
+20150504110926
+20180823212823
+20141105150721
+20141120140837
+20150110113257
+20150701074344
+20170604182521
+20170422130054
+20180112084221
+20150402114712
+20141125111414
+20170506162952
+20150713113436
+20150320132023
+20150318084300
+20181017153812
+20180824092855
+20150825125118
+20140808132327
+20180314122722
+20180212152810
+20150519102521
+20150128134352
+20180129233223
+20141001085322
+20150416094704
+20140813102245
+20180112080312
+20180120172042
+20141121093125
+20180228070102
+20150519115050
+20180306180401
+20140822122938
+20180816123540
+20150609103333
+20141202114457
+20180313090437
+20141216133831
+20180206234620
+20150520164507
+20141215085117
+20140827140759
+20160226132056
+20140826082057
+20141203090115
+20140925073734
+20141120110330
+20180228074442
+20170424115801
+20151120090455
+20140702145448
+20180422154642
+20180825232819
+20150707103241
+20140620130107
+\.
+
+
+--
+-- Data for Name: whois_records; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.whois_records (id, name, json, created_at, updated_at) FROM stdin;
+1	allo.ee	{"disclaimer":"Search results may not be used for commercial, advertising, recompilation, repackaging, redistribution, reuse, obscuring or other similar activities.","name":"allo.ee","status":["ok (paid and in zone)"],"registered":"2020-02-06T14:50:03+02:00","changed":"2020-03-11T16:36:36+02:00","expire":"2021-02-07","outzone":null,"delete":null,"registrant":"Karl Erik Õunapuu","registrant_kind":"priv","email":"karlerik@kreative.ee","registrant_changed":"2020-01-27T17:34:31+02:00","registrant_disclosed_attributes":[],"admin_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"tech_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"registrar":"20 ALLA OÜ","registrar_website":"https://20alla.ee","registrar_phone":"+372.7271000","registrar_changed":"2020-03-02T16:53:19+02:00","nameservers":["koala.ns.kreative.ee","panda.ns.kreative.ee","ns1.allo.ee","allo.ee","ns3.allo.ee","ns4.allo.ee"],"nameservers_changed":"2020-03-11T16:36:36+02:00","dnssec_keys":[],"dnssec_changed":null}	2020-02-06 12:50:06.901125	2020-03-11 14:36:36.951467
+5	koerapea.ee	{"disclaimer":"Search results may not be used for commercial, advertising, recompilation, repackaging, redistribution, reuse, obscuring or other similar activities.","name":"koerapea.ee","status":["inactive"],"registered":"2020-02-21T12:57:23+02:00","changed":"2020-02-21T12:57:23+02:00","expire":"2020-11-22","outzone":null,"delete":null,"registrant":"Kreative Digital OÜ","registrant_kind":"org","registrant_reg_no":"14201185","registrant_ident_country_code":"EE","email":"karlerik@kreative.ee","registrant_changed":"2020-02-12T13:24:42+02:00","registrant_disclosed_attributes":[],"admin_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"tech_contacts":[{"name":"Kreative Digital OÜ","email":"karlerik@kreative.ee","changed":"2020-02-12T13:24:42+02:00","disclosed_attributes":[]}],"registrar":"20 ALLA OÜ","registrar_website":"https://20alla.ee","registrar_phone":"+372.7271000","registrar_changed":"2020-03-02T16:53:19+02:00","nameservers":[],"nameservers_changed":null,"dnssec_keys":[],"dnssec_changed":null}	2020-02-21 10:57:25.515511	2020-03-17 09:36:06.405847
+4	poleokei.ee	{"disclaimer":"Search results may not be used for commercial, advertising, recompilation, repackaging, redistribution, reuse, obscuring or other similar activities.","name":"poleokei.ee","status":["inactive"],"registered":"2020-02-12T14:22:19+02:00","changed":"2020-02-12T15:13:18+02:00","expire":"2021-02-13","outzone":null,"delete":null,"registrant":"Kreative Digital OÜ","registrant_kind":"org","registrant_reg_no":"14201185","registrant_ident_country_code":"EE","email":"karlerik@kreative.ee","registrant_changed":"2020-02-12T13:24:42+02:00","registrant_disclosed_attributes":[],"admin_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"tech_contacts":[{"name":"Kreative Digital OÜ","email":"karlerik@kreative.ee","changed":"2020-02-12T13:24:42+02:00","disclosed_attributes":[]},{"name":"Mari Ann","email":"mari@ann123.ee","changed":"2020-03-17T11:38:14+02:00","disclosed_attributes":[]}],"registrar":"20 ALLA OÜ","registrar_website":"https://20alla.ee","registrar_phone":"+372.7271000","registrar_changed":"2020-03-02T16:53:19+02:00","nameservers":[],"nameservers_changed":null,"dnssec_keys":[],"dnssec_changed":null}	2020-02-12 12:22:20.980682	2020-03-17 09:38:14.511404
+6	miksmitte.ee	{"disclaimer":"Search results may not be used for commercial, advertising, recompilation, repackaging, redistribution, reuse, obscuring or other similar activities.","name":"miksmitte.ee","status":["ok (paid and in zone)"],"registered":"2020-02-21T12:58:15+02:00","changed":"2020-03-11T15:47:52+02:00","expire":"2030-02-22","outzone":null,"delete":null,"registrant":"Kreative Digital OÜ","registrant_kind":"org","registrant_reg_no":"14201185","registrant_ident_country_code":"EE","email":"karlerik@kreative.ee","registrant_changed":"2020-02-12T13:24:42+02:00","registrant_disclosed_attributes":[],"admin_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"tech_contacts":[{"name":"Kreative Digital OÜ","email":"karlerik@kreative.ee","changed":"2020-02-12T13:24:42+02:00","disclosed_attributes":[]}],"registrar":"20 ALLA OÜ","registrar_website":"https://20alla.ee","registrar_phone":"+372.7271000","registrar_changed":"2020-03-02T16:53:19+02:00","nameservers":["miksmitte.ee","ns1.miksmitte.ee","ns1.koerapea.ee","koerapea.ee","ns1.koerapea.com"],"nameservers_changed":"2020-03-11T15:47:52+02:00","dnssec_keys":[],"dnssec_changed":null}	2020-02-21 10:58:15.265279	2020-03-11 13:47:52.785421
+7	aaa.ee	{"disclaimer":"Search results may not be used for commercial, advertising, recompilation, repackaging, redistribution, reuse, obscuring or other similar activities.","name":"aaa.ee","status":["ok (paid and in zone)"],"registered":"2020-01-27T17:38:24+02:00","changed":"2020-03-11T13:29:23+02:00","expire":"2021-01-28","outzone":null,"delete":null,"registrant":"Karl Erik Õunapuu","registrant_kind":"priv","email":"karlerik@kreative.ee","registrant_changed":"2020-01-27T17:34:31+02:00","registrant_disclosed_attributes":[],"admin_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"tech_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"registrar":"20 ALLA OÜ","registrar_website":"https://20alla.ee","registrar_phone":"+372.7271000","registrar_changed":"2020-03-02T16:53:19+02:00","nameservers":["aaa.ee","baaa.ee"],"nameservers_changed":"2020-03-11T13:29:23+02:00","dnssec_keys":[],"dnssec_changed":null}	2020-02-26 14:20:31.583267	2020-03-11 11:29:24.603365
+8	bbb.ee	{"disclaimer":"Search results may not be used for commercial, advertising, recompilation, repackaging, redistribution, reuse, obscuring or other similar activities.","name":"bbb.ee","status":["ok (paid and in zone)"],"registered":"2020-01-27T17:41:13+02:00","changed":"2020-03-11T16:38:36+02:00","expire":"2021-01-28","outzone":null,"delete":null,"registrant":"Karl Erik Õunapuu","registrant_kind":"priv","email":"karlerik@kreative.ee","registrant_changed":"2020-01-27T17:34:31+02:00","registrant_disclosed_attributes":[],"admin_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"tech_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"registrar":"20 ALLA OÜ","registrar_website":"https://20alla.ee","registrar_phone":"+372.7271000","registrar_changed":"2020-03-02T16:53:19+02:00","nameservers":["bbb.ee","ns1.bbb.ee"],"nameservers_changed":"2020-03-11T16:38:36+02:00","dnssec_keys":[],"dnssec_changed":null}	2020-03-11 14:38:36.686254	2020-03-11 14:38:36.686254
+3	okei.ee	{"disclaimer":"Search results may not be used for commercial, advertising, recompilation, repackaging, redistribution, reuse, obscuring or other similar activities.","name":"okei.ee","status":["ok (paid and in zone)"],"registered":"2020-02-12T13:28:38+02:00","changed":"2020-03-11T16:16:59+02:00","expire":"2021-02-13","outzone":null,"delete":null,"registrant":"Kreative Digital OÜ","registrant_kind":"org","registrant_reg_no":"14201185","registrant_ident_country_code":"EE","email":"karlerik@kreative.ee","registrant_changed":"2020-02-12T13:24:42+02:00","registrant_disclosed_attributes":[],"admin_contacts":[{"name":"Mari Ann","email":"mari@ann123.ee","changed":"2020-03-17T11:38:14+02:00","disclosed_attributes":[]}],"tech_contacts":[{"name":"Kreative Digital OÜ","email":"karlerik@kreative.ee","changed":"2020-02-12T13:24:42+02:00","disclosed_attributes":[]}],"registrar":"20 ALLA OÜ","registrar_website":"https://20alla.ee","registrar_phone":"+372.7271000","registrar_changed":"2020-03-02T16:53:19+02:00","nameservers":["okei.ee","ns1.okei.ee"],"nameservers_changed":"2020-03-11T16:16:59+02:00","dnssec_keys":[],"dnssec_changed":null}	2020-02-12 11:28:40.932434	2020-03-17 09:38:14.487991
+2	heihei.ee	{"disclaimer":"Search results may not be used for commercial, advertising, recompilation, repackaging, redistribution, reuse, obscuring or other similar activities.","name":"heihei.ee","status":["serverForceDelete","serverRenewProhibited","serverTransferProhibited"],"registered":"2020-02-06T15:27:57+02:00","changed":"2020-03-17T11:36:05+02:00","expire":"2021-02-07","outzone":null,"delete":"2020-04-28","registrant":"Karl Erik Õunapuu","registrant_kind":"priv","email":"karlerik@kreative.ee","registrant_changed":"2020-01-27T17:34:31+02:00","registrant_disclosed_attributes":[],"admin_contacts":[{"name":"Mari Ann","email":"mari@ann123.ee","changed":"2020-03-17T11:38:14+02:00","disclosed_attributes":[]}],"tech_contacts":[{"name":"Karl Erik Õunapuu","email":"karlerik@kreative.ee","changed":"2020-01-27T17:34:31+02:00","disclosed_attributes":[]}],"registrar":"20 ALLA OÜ","registrar_website":"https://20alla.ee","registrar_phone":"+372.7271000","registrar_changed":"2020-03-02T16:53:19+02:00","nameservers":["koala.ns.kreative.ee","panda.ns.kreative.ee"],"nameservers_changed":"2020-02-06T15:27:58+02:00","dnssec_keys":[],"dnssec_changed":null}	2020-02-06 13:27:59.183372	2020-03-17 09:38:14.533217
+\.
+
+
+--
+-- Name: whois_records_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.whois_records_id_seq', 8, true);
+
+
+--
+-- Name: ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY public.ar_internal_metadata
+    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: contact_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY public.contact_requests
+    ADD CONSTRAINT contact_requests_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: whois_records_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY public.whois_records
+    ADD CONSTRAINT whois_records_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_contact_requests_on_email; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX index_contact_requests_on_email ON public.contact_requests USING btree (email);
+
+
+--
+-- Name: index_contact_requests_on_ip_address; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX index_contact_requests_on_ip_address ON public.contact_requests USING btree (ip_address);
+
+
+--
+-- Name: index_contact_requests_on_secret; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_contact_requests_on_secret ON public.contact_requests USING btree (secret);
+
+
+--
+-- Name: index_contact_requests_on_whois_record_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX index_contact_requests_on_whois_record_id ON public.contact_requests USING btree (whois_record_id);
+
+
+--
+-- Name: index_domains_on_name; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX index_domains_on_name ON public.whois_records USING btree (name);
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

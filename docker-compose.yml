@@ -1,134 +1,22 @@
 version: "3"
 
 services:
-  registry:
-    tty: true
-    stdin_open: true
-    image: registry
-    build:
-      context: ./../registry
-    links:
-      - db
-    environment:
-      - APP_DBHOST=db
-    volumes:
-      - ./../registry:/opt/webapps/app
-      - ./shared/ca:/opt/ca
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
-    restart: on-failure
-
-  epp:
-    tty: true
-    stdin_open: true
-    image: registry
-    links:
-      - db
-    environment:
-      - APP_DBHOST=db
-    volumes:
-      - ./../registry:/opt/webapps/app
-      - ./shared/ca:/opt/ca
-    command: bash -c "rm -f tmp/pids/epp.pid && bundle exec rails server --pid tmp/pids/epp.pid -b 0.0.0.0"
-    restart: on-failure
-
-  epp_proxy:
-    tty: true
-    stdin_open: true
-    image: epp_proxy
-    build:
-      context: ./../epp_proxy
-    links:
-      - db
-    ports:
-      - "700:700"
-      - "3333:3333"
-    volumes:
-      - ./../epp_proxy:/opt/erlang/epp_proxy
-      - ./shared/ca:/opt/ca
-    command: bash -c "rebar3 auto --config config/docker.config"
-    restart: on-failure
-
   rest-whois:
     tty: true
     stdin_open: true
     image: rest-whois
+    ports:
+      - "3000:3000"
     build:
-      context: ./../rest-whois
+      context: ../rest-whois
     links:
       - db
     environment:
       - APP_DBHOST=db
     volumes:
-      - ./../rest-whois:/opt/webapps/app
-      - ./shared/ca:/opt/ca
+      - ../rest-whois:/opt/webapps/app
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
     restart: on-failure
-
-  whois:
-    tty: true
-    stdin_open: true
-    ports:
-      - "43:43"
-    image: whois
-    build:
-      context: ./../whois
-    links:
-      - db
-    environment:
-      - APP_DBHOST=db
-    volumes:
-      - ./../whois:/opt/webapps/app
-      - ./shared/ca:/opt/ca
-    command: bash -c "rm -f tmp/pids/whois_server.pid && ruby whois.rb run"
-    restart: on-failure
-
-  auction_center:
-    tty: true
-    stdin_open: true
-    image: auction_center
-    build:
-      context: ./../auction_center
-    links:
-      - db
-    environment:
-      - APP_DBHOST=db
-      - HEALTHCHECK_USER=healthcheck
-      - HEALTHCHECK_PASSWORD=healthcheck
-    volumes:
-      - ./../auction_center:/opt/webapps/app
-      - ./shared/ca:/opt/ca
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
-    restart: on-failure
-
-  auction_center_delayed_job:
-    image: auction_center
-    tty: true
-    stdin_open: true
-    links:
-      - db
-    environment:
-      - APP_DBHOST=db
-    volumes:
-      - ./../auction_center:/opt/webapps/app
-      - ./shared/ca:/opt/ca
-    command: bash -c "bundle exec rails jobs:work"
-    restart: on-failure
-
-  httpd:
-    image: internetee/httpd_epp:2.2
-    tty: true
-    stdin_open: true
-    ports:
-      # Registry
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./httpd/apache2/conf.d/logging:/etc/apache2/conf.d/logging
-      - ./httpd/apache2/sites-enabled:/etc/apache2/sites-enabled
-      - ./shared/ca:/opt/ca
-    command: bash -c "apachectl -e debug -DFOREGROUND"
-    restart: on-failure
-
   db:
     image: postgres:9.4
     volumes:

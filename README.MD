@@ -1,213 +1,63 @@
-# Docker configuration for internet.ee projects
+## Docker configuration for rest-whois MVP
+This tutorial covers an absolute minimal setup to get rest-whois project up and running in local environment, without actual registry integration.
 
-This repository provides a semi-automated way of setting up local development
-environment for the following projects:
-
-  * [Registry](https://github.com/internetee/registry)
-  * [Rest WHOIS](https://github.com/internetee/rest-whois)
-  * [WHOIS](https://github.com/internetee/whois)
-  * [Auction Center](https://github.com/internetee/auction_center)
-  * [EPP Proxy](https://github.com/internetee/epp_proxy)
-
-## Design
-
-The setup includes one Apache server acting as reverse proxy, 1 REST WHOIS
-server, 1 registry instance serving EPP requests and 1 registry server serving
-all portals interface. Ruby projects are running Puma servers.
-
-Postgres instance persists its data in a dedicated volume, which is NOT deleted
-with `docker-compose down`.
-
-All services run on *.test domain, and are available via HTTPS. Use a tool like
-[dnsmasq](https://www.stevenrombauts.be/2018/01/use-dnsmasq-instead-of-etc-hosts/) to redirect *.test domains to 127.0.0.1.
-
-The following vhosts work on Chrome, Firefox and Safari:
-  * admin.test
-  * rest-whois.test
-  * auction.test
-
-Additionally, whois works on port 43 on localhost, and EPP is exposed on 700 port.
-
-## Pre-requirements
-
-To get started, you need:
-
-  * Docker
-  * OpenSSL command line
-  * Internet.ee projects in specific folders, relative to this folder:
-    ```
-    .
-    +-- docker-images (You are here)
-    +-- registry (clone of https://github.com/internetee/registry)
-    +-- rest-whois (clone of https://github.com/internetee/rest-whois)
-    ```
-
+## Prerequisites
+- Docker (https://www.docker.com/products/docker-desktop)
+- Docker compose (https://docs.docker.com/compose/install/)
+- Git
 
 ## Setup
-
-Setup of the project consists of four steps steps. The projects should work with
-out of the box configuration for both `config/application-example.yml` and
-`config/database-example.yml`. Small changes that are described below are
-needed for certificates and setup of EPP/REST API.
-
-### Setup root CA
-
-You will be asked to supply a password and certain certificate details, such as
-common name. Remember the password, as you'll be required to supply it at
-various points in time for generation of other certificates. The root CA, and
-all the certificates are valid for 1 year only.
-
-  ```bash
-  $ cd shared/ca
-  $ ./prepare_root_ca.sh
-  ```
-
-Add the newly generated certificates from `shared/ca/ca.crt.pem` certificate to
-your trusted chains, and enable trust for SSL communication. If you are using a
-MacOS computer, just drop the certificate file to login keychain in Keychain
-Access.
-
-__NB!__ Trusting a self generated certificate is generally a security risk, so
-make sure that you're the only person with the access to this root ca and do not
-commit it to any kind of source code repository.
-
-If you already have a certificate like that from a different project, you can
-just drop the files to the required locations:
-
-  * key to `shared/ca/private/ca.key.pem`
-  * certificate to `shared/ca/certs/ca.cert.pem`
-
-Then, move on to generating certificates reqired by application.
-
-### Setup application certificates
-
-You will be asked for your root CA password multiple times.
-
-  ```bash
-  $ cd shared/ca
-  $ ./generate_certificates.sh
-  ```
-
-When asked, set common name to `localhost` in the CSR:
-
-```bash
-Country Name (2 letter code) [EE]:
-State or Province Name (full name) [Harjumaa]:
-Locality Name (eg, city) [Tallinn]:
-Organization Name (eg, company) [Eesti Interneti Sihtasutus]:
-Organizational Unit Name (eg, section) []:
-Common Name (e.g. server FQDN or YOUR name) []:localhost
-Email Address [hello@internet.ee]:
+When dependencies are met, proceed to clone `rest-whois` and `docker-images` git repos to the same path.
+```
+$ cd Documents/development/
+$ git clone --single-branch --branch rest-whois-showcase https://github.com/internetee/docker-images.git
+$ git clone --single-branch --branch master https://github.com/internetee/rest-whois.git
 ```
 
-Sign the CSR and commit the certificate:
-
+In `rest-whois` project, create new file `config/database.yml`
 ```
-Certificate Details:
-        Serial Number: 4096 (0x1000)
-        Validity
-            Not Before: Jun 14 12:44:30 2018 GMT
-            Not After : Jun 14 12:44:30 2019 GMT
-        Subject:
-            countryName               = EE
-            stateOrProvinceName       = Harjumaa
-            organizationName          = Eesti Interneti Sihtasutus
-            commonName                = localhost
-            emailAddress              = hello@internet.ee
-        X509v3 extensions:
-            X509v3 Basic Constraints:
-                CA:FALSE
-            X509v3 Key Usage:
-                Digital Signature, Non Repudiation, Key Encipherment
-            Netscape Comment:
-                OpenSSL Generated Certificate
-            X509v3 Subject Key Identifier:
-                37:8F:5C:6B:42:41:7F:66:0C:50:88:61:AA:AE:F6:51:EF:29:3C:3C
-            X509v3 Authority Key Identifier:
-                keyid:49:2D:98:38:1F:27:8E:B1:D6:6C:F0:A5:2E:8D:14:15:59:8E:3A:42
-
-Certificate is to be certified until Jun 14 12:44:30 2019 GMT (365 days)
-Sign the certificate? [y/n]:
-1 out of 1 certificate requests certified, commit? [y/n]y
-```
-
-### Configure registry `config/application.yml`
-
-Put the following values in Registry project's `config/application.yml` file:
-
-```yaml
-openssl_config_path: '/opt/ca/openssl.cnf'
-crl_dir:     '/opt/ca/crl'
-crl_path:     '/opt/ca/crl/crl.pem'
-ca_cert_path: '/opt/ca/certs/ca.crt.pem'
-ca_key_path:  '/opt/ca/private/ca.key.pem'
-ca_key_password: # your password
-
-
-webclient_cert_common_name: 'localhost'
-epp_port: '700'
-cert_path: '/opt/ca/certs/webclient.crt.pem'
-key_path: '/opt/ca/private/webclient.key.pem'
-epp_hostname: 'httpd'
-repp_url: 'http://repp:3000/repp/v1/'
-```
-
-### Configure whois database
-
-Whois database does not work well with environment variables, so you can instead
-hard code a working docker setup in `config/database.yml`:
-
-```yaml
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: 5
-  host: db
-  username: postgres
+  pool: <%= ENV.fetch("APP_DB_MAX_THREADS") { 5 } %>
+  host: <%= ENV.fetch("APP_DBHOST") { "localhost" } %>
+  username: <%= ENV.fetch("APP_DBUSER") { "postgres" } %>
   password:
+
+development:
+  <<: *default
+  database: postgres
 ```
 
-### Build docker images
-
-In the project root, run the following commands:
-
-```bash
-$ docker-compose build
+Again, in `rest-whois` project, rename `config/application-sample.yml` to `config/application.yml` and include test reCaptcha keys
+```
+recaptcha_site_key: 6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+recaptcha_secret_key: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 ```
 
-__NB!__ Containers need to be rebuilt every time there is an update to the
-gemfile.
+Also, delete `db/migrate` folder.
 
-### Setup databases
+Now go to `docker-images` folder via terminal and launch
 
-```bash
-$ docker-compose run registry rake db:setup:all
-$ docker-compose run rest-whois rake db:setup
-$ docker-compose run auction rake db:setup
+```
+docker-compose up -d
 ```
 
-__NB!__ On first run, the commands above might fail due to the database
-container not being yet ready.
-
-### Connecting to database server
-
-If you need to connect to postgres container, it is exposed to localhost on port
-5433, with default username being `postgres` and no password.
-
-```bash
-$ psql -p 5433 -U postgres -h localhost
+Containers should boot. When done, do 
+```
+docker ps
 ```
 
+...and find the name for database container. For me it was `whois_db_1` .
 
-## Useful commands
+Now, when still in terminal, in docker-images folder, let's write a dump to our database. In command line:
 
-Below you will find a list of useful and frequently used docker commands:
+```
+cat whois_sample | docker exec -i <CONTAINER NAME> psql -Upostgres
+```
 
-  * `docker exec -it $container_name_number /bin/bash` Opens bash in a running
-  container, so you can run `rake test`, `rake db:migrate` or other commands on
-  the codebase.
-  * `docker image prune` Removes dangling images to save you some SSD space.
-  * `docker attach $container_name_number` Attaches to a running container,
-  useful if you have pry breakpoint somewhere in your code. To deatach
-  without stopping the container, press `CTRL+P, CTRL+Q`.
-  * `docker volume rm docker-images_pg` Removes the postgres docker image.
+This should seed your docker database with some little amount of data.
+
+From now on, you should be able to reach `rest-whois` service from `http://localhost:3000` 
+
+Rest-whois files can be found from rest-whois folder, obviously. They are linked automatically to container as well.
