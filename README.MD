@@ -11,7 +11,7 @@ environment for the following projects:
 
 ## Design
 
-The setup includes one Apache server acting as reverse proxy, 1 REST WHOIS
+The setup includes one nginx server acting as reverse proxy, 1 REST WHOIS
 server, 1 registry instance serving EPP requests and 1 registry server serving
 all portals interface. Ruby projects are running Puma servers.
 
