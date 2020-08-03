@@ -9,10 +9,12 @@ RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends > /
     gnupg2 \
     git \
     apt-utils \
+    && apt-get dist-upgrade -yf\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y locales
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 RUN sed -i -e 's/# et_EE.UTF-8 UTF-8/et_EE.UTF-8 UTF-8/' /etc/locale.gen && \
     dpkg-reconfigure --frontend=noninteractive locales && \
     update-locale LANG=et_EE.UTF-8
