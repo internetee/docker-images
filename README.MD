@@ -18,6 +18,7 @@ The setup includes:
   * 1 auction server serving auction interface
   * 1 auction server running background (delayed) tasks
   * 1 REST WHOIS server
+  * 1 WHOIS Server
 Ruby projects are running Puma servers.
 
 Postgres instance persists its data in a dedicated volume, which is NOT deleted
