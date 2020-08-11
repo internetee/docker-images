@@ -14,6 +14,7 @@ services:
     volumes:
       - ./../registry:/opt/webapps/app
       - ./shared/ca:/opt/ca
+      - tmp:/opt/webapps/app/tmp/
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
     restart: on-failure
 
@@ -28,6 +29,7 @@ services:
     volumes:
       - ./../registry:/opt/webapps/app
       - ./shared/ca:/opt/ca
+      - tmp:/opt/webapps/app/tmp/
     command: bash -c "rm -f tmp/pids/epp.pid && bundle exec rails server --pid tmp/pids/epp.pid -b 0.0.0.0"
     restart: on-failure
 
@@ -136,6 +138,9 @@ services:
     ports:
       - "5433:5432"
     restart: on-failure
+    environment:
+      POSTGRES_DB: "db"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
 
 volumes:
   pg:
