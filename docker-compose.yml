@@ -1,5 +1,9 @@
 version: "3"
 
+networks:
+  monitor-net:
+    driver: bridge
+
 services:
   registry:
     tty: true
@@ -9,6 +13,9 @@ services:
       context: ./../registry
     links:
       - db
+    networks:
+      - default
+      - monitor-net
     environment:
       - APP_DBHOST=db
     volumes:
@@ -24,6 +31,9 @@ services:
     image: registry
     links:
       - db
+    networks:
+      - default
+      - monitor-net
     environment:
       - APP_DBHOST=db
     volumes:
@@ -41,6 +51,9 @@ services:
       context: ./../epp_proxy
     links:
       - db
+    networks:
+      - default
+      - monitor-net
     ports:
       - "700:700"
       - "3333:3333"
@@ -58,6 +71,9 @@ services:
       context: ./../rest-whois
     links:
       - db
+    networks:
+      - default
+      - monitor-net
     environment:
       - APP_DBHOST=db
     volumes:
@@ -76,6 +92,9 @@ services:
       context: ./../whois
     links:
       - db
+    networks:
+      - default
+      - monitor-net
     environment:
       - APP_DBHOST=db
     volumes:
@@ -92,6 +111,9 @@ services:
       context: ./../auction_center
     links:
       - db
+    networks:
+      - default
+      - monitor-net
     environment:
       - APP_DBHOST=db
       - HEALTHCHECK_USER=healthcheck
@@ -108,6 +130,9 @@ services:
     stdin_open: true
     links:
       - db
+    networks:
+      - default
+      - monitor-net
     environment:
       - APP_DBHOST=db
     volumes:
@@ -124,6 +149,8 @@ services:
       # Registry
       - "80:80"
       - "443:443"
+    networks:
+      - monitor-net
     volumes:
       - ./httpd/apache2/conf.d/logging:/etc/apache2/conf.d/logging
       - ./httpd/apache2/sites-enabled:/etc/apache2/sites-enabled
@@ -138,10 +165,144 @@ services:
     ports:
       - "5433:5432"
     restart: on-failure
+    networks:
+      - default
+      - monitor-net
     environment:
       POSTGRES_DB: "db"
       POSTGRES_HOST_AUTH_METHOD: "trust"
 
+  prometheus:
+    image: prom/prometheus:v2.17.1
+    container_name: prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    expose:
+      - 9090
+    networks:
+      - default
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+  alertmanager:
+    image: prom/alertmanager:v0.20.0
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    restart: unless-stopped
+    expose:
+      - 9093
+    networks:
+      - default
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+  nodeexporter:
+    image: prom/node-exporter:v0.18.1
+    container_name: nodeexporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    expose:
+      - 9100
+    networks:
+      - default
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:v0.34.0
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      #- /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
+    restart: unless-stopped
+    expose:
+      - 8080
+    networks:
+      - default
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+  grafana:
+    image: grafana/grafana:6.7.2
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    networks:
+      - default
+      - monitor-net
+    expose:
+      - 3000
+    labels:
+      org.label-schema.group: "monitoring"
+
+  pushgateway:
+    image: prom/pushgateway:v1.2.0
+    container_name: pushgateway
+    restart: unless-stopped
+    expose:
+      - 9091
+    networks:
+      - default
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+  caddy:
+    image: stefanprodan/caddy
+    container_name: caddy
+    ports:
+      - "3000:3000"
+      - "9090:9090"
+      - "9093:9093"
+      - "9091:9091"
+    volumes:
+      - ./caddy:/etc/caddy
+    environment:
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - default
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
 volumes:
   pg:
   tmp:
+  prometheus_data:
+  grafana_data:
