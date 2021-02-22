@@ -209,6 +209,8 @@ Let's shut down our composed project now via `docker-compose down` for now.
 Put the following values in Registry project's `config/application.yml` file:
 
 ```yaml
+app_name: '.EE Registry'
+
 openssl_config_path: '/opt/ca/openssl.cnf'
 crl_dir:     '/opt/ca/crl'
 crl_path:     '/opt/ca/crl/crl.pem'
@@ -226,9 +228,15 @@ repp_url: 'http://epp:3000/repp/v1/'
 
 action_mailer_default_host: 'registry.test'
 action_mailer_default_from: 'no-reply@example.com'
+
+secret_key_base: 'please-change-it-you-can-generate-it-with-rake-secret'
+devise_secret: 'please-change-it-you-can-generate-it-with-rake-secret'
+time_zone: 'Tallinn'
 ```
 
 Rename config/environments/development.rb.sample to development.rb
+
+change this line from false to true
 
 ```rb
 config.action_mailer.raise_delivery_errors = true
