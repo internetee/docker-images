@@ -3,35 +3,37 @@
 This repository provides a semi-automated way of setting up local development
 environment for the following projects:
 
-  * [Registry](https://github.com/internetee/registry)
-  * [Rest WHOIS](https://github.com/internetee/rest-whois)
-  * [WHOIS](https://github.com/internetee/whois)
-  * [Auction Center](https://github.com/internetee/auction_center)
-  * [EPP Proxy](https://github.com/internetee/epp_proxy)
+- [Registry](https://github.com/internetee/registry)
+- [Rest WHOIS](https://github.com/internetee/rest-whois)
+- [WHOIS](https://github.com/internetee/whois)
+- [Auction Center](https://github.com/internetee/auction_center)
+- [EPP Proxy](https://github.com/internetee/epp_proxy)
 
 ## Design
 
 The setup includes:
-  * 1 Apache server acting as reverse proxy
-  * 1 registry instance serving EPP requests
-  * 1 registry server serving all portals interface.
-  * 1 auction server serving auction interface
-  * 1 auction server running background (delayed) tasks
-  * 1 REST WHOIS server
-  * 1 WHOIS Server
-Ruby projects are running Puma servers.
+
+- 1 Apache server acting as reverse proxy
+- 1 registry instance serving EPP requests
+- 1 registry server serving all portals interface.
+- 1 auction server serving auction interface
+- 1 auction server running background (delayed) tasks
+- 1 REST WHOIS server
+- 1 WHOIS Server
+  Ruby projects are running Puma servers.
 
 Postgres instance persists its data in a dedicated volume, which is NOT deleted
 with `docker-compose down`.
 
-All services run on *.test domain, and are available via HTTPS. Use a tool like
-[dnsmasq](https://www.stevenrombauts.be/2018/01/use-dnsmasq-instead-of-etc-hosts/) to redirect *.test domains to 127.0.0.1.
+All services run on _.test domain, and are available via HTTPS. Use a tool like
+[dnsmasq](https://www.stevenrombauts.be/2018/01/use-dnsmasq-instead-of-etc-hosts/) to redirect _.test domains to 127.0.0.1.
 
 The following vhosts work on Chrome, Firefox and Safari:
-  * registry.test
-  * rest-whois.test
-  * auction.test
-  * registrar.test
+
+- registry.test
+- rest-whois.test
+- auction.test
+- registrar.test
 
 Additionally, whois works on port 43 on localhost, and EPP is exposed on 700 port.
 
@@ -39,15 +41,14 @@ Additionally, whois works on port 43 on localhost, and EPP is exposed on 700 por
 
 To get started, you need:
 
-  * Docker
-  * Internet.ee projects in specific folders, relative to this folder:
-    ```
-    .
-    +-- docker-images (You are here)
-    +-- registry (clone of https://github.com/internetee/registry)
-    +-- rest-whois (clone of https://github.com/internetee/rest-whois)
-    ```
-
+- Docker
+- Internet.ee projects in specific folders, relative to this folder:
+  ```
+  .
+  +-- docker-images (You are here)
+  +-- registry (clone of https://github.com/internetee/registry)
+  +-- rest-whois (clone of https://github.com/internetee/rest-whois)
+  ```
 
 ## Setup
 
@@ -64,7 +65,7 @@ In the project root, run the following command:
 $ docker-compose build
 ```
 
-__NB!__ Containers need to be rebuilt every time there is an update to the
+**NB!** Containers need to be rebuilt every time there is an update to the
 gemfile.
 
 ### Fire up docker-compose project
@@ -90,6 +91,7 @@ $ docker ps
 ```
 
 Mark down any `CONTAINER ID` which is running `registry` image.
+
 ```
 $ docker ps
 CONTAINER ID        IMAGE
@@ -106,7 +108,7 @@ b0934102c7a6        auction_center
 Now, let's connect to registry container via:
 
 ```bash
-$ docker exec -ti <CONTAINER ID> /bin/bash
+$ docker-compose run registry bash
 ```
 
 Great, we're inside container now.
@@ -120,10 +122,10 @@ all the certificates are valid for 1 year only.
 
 Now, while connected to `registry` container, run this:
 
-  ```bash
-  $ cd /opt/ca
-  $ ./prepare_root_ca.sh
-  ```
+```bash
+$ cd /opt/ca
+$ ./prepare_root_ca.sh
+```
 
 By docker-compose, our main host `shared/ca` is mirrored to container env's `/opt/ca` path. These directories are shared.
 
@@ -132,15 +134,15 @@ your trusted chains, and enable trust for SSL communication. If you are using a
 MacOS computer, just drop the certificate file to login keychain in Keychain
 Access.
 
-__NB!__ Trusting a self generated certificate is generally a security risk, so
+**NB!** Trusting a self generated certificate is generally a security risk, so
 make sure that you're the only person with the access to this root ca and do not
 commit it to any kind of source code repository.
 
 If you already have a certificate like that from a different project, you can
 just drop the files to the required locations:
 
-  * key to `shared/ca/private/ca.key.pem`
-  * certificate to `shared/ca/certs/ca.cert.pem`
+- key to `shared/ca/private/ca.key.pem`
+- certificate to `shared/ca/certs/ca.cert.pem`
 
 Then, move on to generating certificates reqired by application.
 
@@ -148,10 +150,10 @@ Then, move on to generating certificates reqired by application.
 
 As in previous step, run following commands inside container environment. You will be asked for your root CA password multiple times.
 
-  ```bash
-  $ cd /opt/ca
-  $ ./generate_certificates.sh
-  ```
+```bash
+$ cd /opt/ca
+$ ./generate_certificates.sh
+```
 
 When asked, set common name to `localhost` in the CSR:
 
@@ -206,10 +208,10 @@ Put the following values in Registry project's `config/application.yml` file:
 
 ```yaml
 openssl_config_path: '/opt/ca/openssl.cnf'
-crl_dir:     '/opt/ca/crl'
-crl_path:     '/opt/ca/crl/crl.pem'
+crl_dir: '/opt/ca/crl'
+crl_path: '/opt/ca/crl/crl.pem'
 ca_cert_path: '/opt/ca/certs/ca.crt.pem'
-ca_key_path:  '/opt/ca/private/ca.key.pem'
+ca_key_path: '/opt/ca/private/ca.key.pem'
 ca_key_password: # your password
 
 webclient_ips: '127.0.0.1'
@@ -219,7 +221,35 @@ cert_path: '/opt/ca/certs/webclient.crt.pem'
 key_path: '/opt/ca/private/webclient.key.pem'
 epp_hostname: 'epp_proxy'
 repp_url: 'http://epp:3000/repp/v1/'
+
+action_mailer_default_host: 'registry.test'
+action_mailer_default_from: 'no-reply@example.com'
 ```
+
+Rename config/environments/development.rb.sample to development.rb
+
+```rb
+config.action_mailer.raise_delivery_errors = true
+```
+
+and comment this line
+
+```rb
+config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+```
+
+### Configure rest-whois `config/application.yml`
+
+Copy and then rename application-example.yml to application.yml
+
+```yaml
+recaptcha_site_key: 6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+recaptcha_secret_key: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+```
+
+### Configure rest-whois database
+
+Rename config/database-example.yml to config/database.yml
 
 ### Configure whois database
 
@@ -244,6 +274,22 @@ default: &default
 
 ```
 
+### Configure auction center
+
+Rename customization.yml.sample to customization.yml
+
+### Added in /etc/hosts
+
+```
+  127.0.0.1       auction.test
+  127.0.0.1       rest-whois.test
+  127.0.0.1       whois.test
+  127.0.0.1       registry.test
+  127.0.0.1       epp.test
+  127.0.0.1       registrar.test
+  127.0.0.1       registrant.test
+```
+
 ### Build docker images again
 
 In the project root, run the following commands:
@@ -252,7 +298,7 @@ In the project root, run the following commands:
 $ docker-compose build
 ```
 
-### Setup databases
+### Setup registry database
 
 Assuming you're going to set up registry as development, rename `config/database_development.yml.sample` to `config/database.yml`
 
@@ -268,6 +314,11 @@ default: &default
   password:
 
 ```
+
+### Setup auction center database
+
+Rename database.yml.sample to database.yml
+
 Done? Great. Let's initialize our databases.
 
 ```bash
@@ -276,7 +327,7 @@ $ docker-compose run rest-whois bundle exec rake db:setup
 $ docker-compose run auction_center bundle exec rake db:setup
 ```
 
-__NB!__ On first run, the commands above might fail due to the database
+**NB!** On first run, the commands above might fail due to the database
 container not being yet ready.
 
 ### Connecting to database server
@@ -288,16 +339,15 @@ If you need to connect to postgres container, it is exposed to localhost on port
 $ psql -p 5433 -U postgres -h localhost
 ```
 
-
 ## Useful commands
 
 Below you will find a list of useful and frequently used docker commands:
 
-  * `docker exec -it $container_name_number /bin/bash` Opens bash in a running
+- `docker exec -it $container_name_number /bin/bash` Opens bash in a running
   container, so you can run `rake test`, `rake db:migrate` or other commands on
   the codebase.
-  * `docker image prune` Removes dangling images to save you some SSD space.
-  * `docker attach $container_name_number` Attaches to a running container,
+- `docker image prune` Removes dangling images to save you some SSD space.
+- `docker attach $container_name_number` Attaches to a running container,
   useful if you have pry breakpoint somewhere in your code. To deatach
   without stopping the container, press `CTRL+P, CTRL+Q`.
-  * `docker volume rm docker-images_pg` Removes the postgres docker image.
+- `docker volume rm docker-images_pg` Removes the postgres docker image.
