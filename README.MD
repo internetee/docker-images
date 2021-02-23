@@ -108,6 +108,10 @@ Now, let's connect to registry container via:
 ```bash
 $ docker exec -ti <CONTAINER ID> /bin/bash
 ```
+or
+```bash
+$ docker-compose run registry bash
+```
 
 Great, we're inside container now.
 
@@ -205,6 +209,8 @@ Let's shut down our composed project now via `docker-compose down` for now.
 Put the following values in Registry project's `config/application.yml` file:
 
 ```yaml
+app_name: '.EE Registry'
+
 openssl_config_path: '/opt/ca/openssl.cnf'
 crl_dir:     '/opt/ca/crl'
 crl_path:     '/opt/ca/crl/crl.pem'
@@ -219,7 +225,40 @@ cert_path: '/opt/ca/certs/webclient.crt.pem'
 key_path: '/opt/ca/private/webclient.key.pem'
 epp_hostname: 'epp_proxy'
 repp_url: 'http://epp:3000/repp/v1/'
+
+action_mailer_default_host: 'registry.test'
+action_mailer_default_from: 'no-reply@example.com'
+
+secret_key_base: 'please-change-it-you-can-generate-it-with-rake-secret'
+devise_secret: 'please-change-it-you-can-generate-it-with-rake-secret'
+time_zone: 'Tallinn'
 ```
+
+Rename config/environments/development.rb.sample to development.rb
+
+change this line from false to true
+
+```rb
+config.action_mailer.raise_delivery_errors = true
+```
+
+and comment this line
+
+```rb
+config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+```
+
+
+### Configure REST-Whois
+Rename application-example.yml to application.yml
+
+In application.yml added
+```yaml
+recaptcha_site_key: 6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+recaptcha_secret_key: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+```
+
+Rename database-example.yml to database.yml
 
 ### Configure whois database
 
@@ -236,12 +275,29 @@ default: &default
   password:
 ```
 
+### Configure Auction Center
+Rename customization.yml.sample to customization.yml
+
+Rename database.yml.sample to database.yml
+
 ### Configure epp-proxy sys.config
 
 ```yaml
 %% Path to root CA that should check the client certificates.
 {cacertfile_path, "/opt/ca/certs/ca.crt.pem"},
 
+```
+### /etc/hosts
+
+Added to /etc/hosts
+
+```127.0.0.1       auction.test
+127.0.0.1       rest-whois.test
+127.0.0.1       whois.test
+127.0.0.1       registry.test
+127.0.0.1       epp.test
+127.0.0.1       registrar.test
+127.0.0.1       registrant.test
 ```
 
 ### Build docker images again
