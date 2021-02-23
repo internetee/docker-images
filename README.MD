@@ -277,6 +277,7 @@ default: &default
 
 ### Configure Auction Center
 Rename customization.yml.sample to customization.yml
+
 Rename database.yml.sample to database.yml
 
 ### Configure epp-proxy sys.config
@@ -287,14 +288,17 @@ Rename database.yml.sample to database.yml
 
 ```
 ### /etc/hosts
+
 Added to /etc/hosts
+
 ```127.0.0.1       auction.test
 127.0.0.1       rest-whois.test
 127.0.0.1       whois.test
 127.0.0.1       registry.test
 127.0.0.1       epp.test
 127.0.0.1       registrar.test
-127.0.0.1       registrant.test```
+127.0.0.1       registrant.test
+```
 
 ### Build docker images again
 
