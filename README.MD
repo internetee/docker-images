@@ -11,15 +11,9 @@ environment for the following projects:
 
 ## Design
 
-The setup includes:
-  * 1 Apache server acting as reverse proxy
-  * 1 registry instance serving EPP requests
-  * 1 registry server serving all portals interface.
-  * 1 auction server serving auction interface
-  * 1 auction server running background (delayed) tasks
-  * 1 REST WHOIS server
-  * 1 WHOIS Server
-Ruby projects are running Puma servers.
+The setup includes one nginx server acting as reverse proxy, 1 REST WHOIS
+server, 1 registry instance serving EPP requests and 1 registry server serving
+all portals interface. Ruby projects are running Puma servers.
 
 Postgres instance persists its data in a dedicated volume, which is NOT deleted
 with `docker-compose down`.

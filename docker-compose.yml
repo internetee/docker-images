@@ -11,6 +11,7 @@ services:
       - db
     environment:
       - APP_DBHOST=db
+      - PARALLEL_WORKERS=1
     volumes:
       - ./../registry:/opt/webapps/app
       - ./shared/ca:/opt/ca
@@ -116,25 +117,25 @@ services:
     command: bash -c "bundle exec rails jobs:work"
     restart: on-failure
 
-  httpd:
-    image: internetee/httpd_epp:2.2
+  nginx:
+    image: nginx:1.19.0
     tty: true
     stdin_open: true
     ports:
-      # Registry
       - "80:80"
       - "443:443"
     volumes:
-      - ./httpd/apache2/conf.d/logging:/etc/apache2/conf.d/logging
-      - ./httpd/apache2/sites-enabled:/etc/apache2/sites-enabled
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
       - ./shared/ca:/opt/ca
-    command: bash -c "apachectl -e debug -DFOREGROUND"
     restart: on-failure
 
   db:
     image: postgres:9.4
     volumes:
       - pg:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=password
     ports:
       - "5433:5432"
     restart: on-failure
