@@ -53,6 +53,7 @@ RUN apt-get install -y --no-install-recommends > /dev/null \
   wkhtmltopdf \
   libxslt1-dev \
   libxml2-dev \
+  python-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
