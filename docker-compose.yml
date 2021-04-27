@@ -11,6 +11,7 @@ services:
       - db
     environment:
       - APP_DBHOST=db
+      - REDIS_URL=redis://redis:6379/12
       - PARALLEL_WORKERS=1
     volumes:
       - ./../registry:/opt/webapps/app
@@ -18,6 +19,25 @@ services:
       - tmp:/opt/webapps/app/tmp/
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
     restart: on-failure
+
+  redis:
+    image: redis
+    volumes:
+      - ../../tmp/db:/var/lib/redis/data
+
+  sidekiq:
+    build:
+      context: ./../registry
+    links:
+      - db
+    command: 'bundle exec sidekiq'
+    volumes:
+      - ./../registry:/opt/webapps/app
+    environment:
+      - APP_DBHOST=db
+      - REDIS_URL=redis://redis:6379/12
+    depends_on:
+      - redis
 
   epp:
     tty: true
