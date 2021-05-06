@@ -49,6 +49,7 @@ services:
       - db
     environment:
       - APP_DBHOST=db
+      - REDIS_URL=redis://redis:6379/12
     volumes:
       - ./../registry:/opt/webapps/app
       - ./shared/ca:/opt/ca
