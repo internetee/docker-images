@@ -1,0 +1,44 @@
+upstream registrar_center {
+    server registrar_center:3000;
+}
+
+server {
+    listen 80;
+    server_name registrar_center.test;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name registrar_center.test;
+
+    ssl_certificate /opt/ca/certs/apache.crt;
+    ssl_certificate_key /opt/ca/private/apache.key;
+
+    try_files $uri/index.html $uri @app;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 500;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml;
+    gzip_disable "MSIE [1-6]\.";
+
+    location = / {
+        rewrite ^(.*)$ /registrar_center/$1 break;
+        proxy_pass   http://registrar_center;
+    }
+
+    location @app {
+        proxy_set_header  X-Real-IP         $remote_addr;
+        proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header  Host              $http_host;
+        proxy_set_header  X-Forwarded-Proto $scheme;
+        proxy_redirect    off;
+        proxy_pass        http://registrar_center;
+        break;
+    }
+}

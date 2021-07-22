@@ -23,6 +23,29 @@ services:
     depends_on:
       - db
 
+  registrar_center:
+    tty: true
+    stdin_open: true
+    image: registrar_center
+    build:
+      context: ./../registrar_center
+    links:
+      - db
+      - registry
+    environment:
+      - APP_DBHOST=db
+      - REDIS_URL=redis://redis:6379/12
+      - PARALLEL_WORKERS=1
+    volumes:
+      - ./../registrar_center:/opt/webapps/app
+      - ./shared/ca:/opt/ca
+      - tmp:/opt/webapps/app/tmp/
+      - ./../:/shared
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: always
+    depends_on:
+      - db
+
   redis:
     image: redis
     volumes:
