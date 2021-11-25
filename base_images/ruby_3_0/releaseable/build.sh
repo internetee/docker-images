@@ -1,1 +1,1 @@
-docker build --no-cache -t internetee/ruby_base:3.0 -t internetee/ruby_base:latest -t internetee/ruby_base:3.0-base.$(date +'%Y.%m.%d') .
+docker build --no-cache -t internetee/ruby_base:3.0.3 -t internetee/ruby_base:latest -t internetee/ruby_base:3.0-base.$(date +'%Y.%m.%d') .

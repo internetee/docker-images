@@ -1,4 +1,4 @@
-FROM ruby:3.0.2-slim-bullseye
+FROM ruby:3.0.3-slim-bullseye
 # NodeJS version
 ARG NODE_VER=14
 # Yarn version
