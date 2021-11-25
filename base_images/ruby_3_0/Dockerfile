@@ -1,4 +1,4 @@
-FROM ruby:3.0-slim-buster
+FROM ruby:3.0.3-slim-buster
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends > /dev/null \
