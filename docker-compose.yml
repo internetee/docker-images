@@ -45,6 +45,7 @@ services:
     restart: always
     depends_on:
       - db
+      - registry
 
   redis:
     image: redis
