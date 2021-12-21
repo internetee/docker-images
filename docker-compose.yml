@@ -22,6 +22,28 @@ services:
     restart: always
     depends_on:
       - db
+  
+  eid:
+    tty: true
+    stdin_open: true
+    image: eid
+    build:
+      context: ./../eid_manager
+    links:
+      - db
+    environment:
+      - APP_DBHOST=db
+      - REDIS_URL=redis://redis:6379/12
+      - PARALLEL_WORKERS=1
+    volumes:
+      - ./../eid_manager:/opt/webapps/app
+      - ./shared/ca:/opt/ca
+      - tmp:/opt/webapps/app/tmp/
+      - ./../:/shared
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: always
+    depends_on:
+      - db
     
   accreditation_center:
     tty: true

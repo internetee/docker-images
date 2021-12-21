@@ -1,10 +1,10 @@
-upstream accreditation_center {
-    server accreditation_center:3000;
+upstream eid {
+    server eid:3000;
 }
 
 server {
     listen 80;
-    server_name accreditation_center.test;
+    server_name eid.test;
 
     location / {
         return 301 https://$host$request_uri;
@@ -13,7 +13,7 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name accreditation_center.test;
+    server_name eid.test;
 
     ssl_certificate /opt/ca/certs/apache.crt;
     ssl_certificate_key /opt/ca/private/apache.key;
@@ -33,7 +33,10 @@ server {
         proxy_set_header  Host              $host;
         proxy_set_header  X-Forwarded-Proto $scheme;
         proxy_redirect    off;
-        proxy_pass        http://accreditation_center;
+        proxy_pass        http://eid;
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
         break;
     }
 }
