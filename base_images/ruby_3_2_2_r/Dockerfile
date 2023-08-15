@@ -1,4 +1,7 @@
-FROM ruby:2.7-slim-buster
+ARG RUBY_VER=3.2.2
+
+FROM ruby:$RUBY_VER-slim-buster as base
+
 ARG NODE_VER=14
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -20,11 +23,13 @@ RUN sed -i -e 's/# et_EE.UTF-8 UTF-8/et_EE.UTF-8 UTF-8/' /etc/locale.gen && \
     dpkg-reconfigure --frontend=noninteractive locales && \
     update-locale LANG=et_EE.UTF-8
 
+FROM base as build
+
 ENV LANG et_EE.UTF-8
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -s | apt-key add -
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 RUN apt-get update > /dev/null && apt-get install -y --no-install-recommends > /dev/null \
-    postgresql-client-11=* \
+    postgresql-client-13=* \
     libpq-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -67,7 +72,6 @@ RUN unzip chromedriver_linux64.zip -d /usr/local/bin
 RUN rm /chromedriver_linux64.zip
 
 
-
 RUN curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb
 RUN dpkg -i /chrome.deb || apt-get update > /dev/null \
     && apt-get install -yf --no-install-recommends > /dev/null && apt-get clean \
@@ -78,4 +82,5 @@ RUN sed -i 's/SECLEVEL=2/SECLEVEL=1/' /etc/ssl/openssl.cnf
 
 RUN mkdir -p /opt/webapps/app/tmp/pids
 WORKDIR /opt/webapps/app
+
 EXPOSE 3000
