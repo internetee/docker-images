@@ -326,6 +326,11 @@ $ docker-compose run rest-whois bundle exec rake db:setup
 $ docker-compose run auction_center bundle exec rake db:setup
 ```
 
+If an error with repp_logs and epp_logs occurs when running tests in the registry, try running the following command:
+```
+docker-compose run registry bundle exec rake db:schema:load:all
+```
+
 __NB!__ On first run, the commands above might fail due to the database
 container not being yet ready.
 
