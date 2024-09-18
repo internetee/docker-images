@@ -68,24 +68,6 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Chromedriver
-RUN curl https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip -o /chromedriver_linux64.zip \
-    && apt-get update \
-    && apt-get install -yf --no-install-recommends unzip \
-    && apt-get clean  \
-    && rm -rf /var/lib/apt/lists/* \
-    && unzip chromedriver_linux64.zip -d /usr/local/bin \
-    && rm /chromedriver_linux64.zip
-
-# Install Google Chrome
-RUN curl https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /chrome.deb \
-    && dpkg -i /chrome.deb || apt-get update && apt-get install -yf --no-install-recommends \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && dpkg -i /chrome.deb \
-    && rm /chrome.deb \
-    && sed -i 's/SECLEVEL=2/SECLEVEL=1/' /etc/ssl/openssl.cnf
-
 # Create necessary directories
 RUN mkdir -p /opt/webapps/app/tmp/pids
 WORKDIR /opt/webapps/app
