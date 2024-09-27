@@ -22,6 +22,73 @@ services:
     restart: always
     depends_on:
       - db
+  
+  eid:
+    tty: true
+    stdin_open: true
+    image: eid
+    build:
+      context: ./../eid_manager
+    links:
+      - db
+    environment:
+      - APP_DBHOST=db
+      - REDIS_URL=redis://redis:6379/12
+      - PARALLEL_WORKERS=1
+    volumes:
+      - ./../eid_manager:/opt/webapps/app
+      - ./shared/ca:/opt/ca
+      - tmp:/opt/webapps/app/tmp/
+      - ./../:/shared
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: always
+    depends_on:
+      - db
+
+  eis_billing_system:
+    tty: true
+    stdin_open: true
+    image: eis_billing_system
+    build:
+      context: ./../eis_billing_system
+    links:
+      - db
+      - registry
+    environment:
+      - APP_DBHOST=db
+      - PARALLEL_WORKERS=1
+    volumes:
+      - ./../eis_billing_system:/opt/webapps/app
+      - ./shared/ca:/opt/ca
+      - tmp:/opt/webapps/app/tmp/
+      - ./../:/shared
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: always
+    depends_on:
+      - db
+    
+  accreditation_center:
+    tty: true
+    stdin_open: true
+    image: accreditation_center
+    build:
+      context: ./../accreditation_center
+    links:
+      - db
+      - registry
+    environment:
+      - APP_DBHOST=db
+      - REDIS_URL=redis://redis:6379/12
+      - PARALLEL_WORKERS=1
+    volumes:
+      - ./../accreditation_center:/opt/webapps/app
+      - ./shared/ca:/opt/ca
+      - tmp:/opt/webapps/app/tmp/
+      - ./../:/shared
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    restart: always
+    depends_on:
+      - db
 
   redis:
     image: redis
@@ -166,6 +233,16 @@ services:
     environment:
       POSTGRES_DB: "db"
       POSTGRES_HOST_AUTH_METHOD: "trust"
+
+  ngrok:
+    image: shkoliar/ngrok:latest
+    ports:
+      - 4551:4551
+    links:
+      - eis_billing_system
+    environment:
+      - DOMAIN=eis_billing_system
+      - PORT=3000
 
 volumes:
   pg:
