@@ -1,0 +1,1 @@
+docker build --pull . --no-cache -t internetee/ruby:3.4.1-node-24 -t internetee/ruby:3.4.1-node24 -t internetee/ruby:3.4.1-node24-no-chrome -t internetee/ruby:3.4.1-bookworm-node-24 -t internetee/ruby:3.4.1.$(date +'%Y.%m.%d')-node-24

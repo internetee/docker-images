@@ -12,3 +12,6 @@ shared/ca/*
 !shared/ca/prepare_root_ca.sh
 !shared/ca/server.csr.cnf
 !shared/ca/v3.ext
+
+# macos bs
+.DS_Store
